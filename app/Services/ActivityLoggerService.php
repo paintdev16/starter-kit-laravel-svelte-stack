@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 
 class ActivityLoggerService
 {
-    public static function log(Request $request, string $action, ?string $description = null): ActivityLog
+    public static function log(Request $request, string $action, ?string $description = null, ?int $userId = null): ActivityLog
     {
         $deviceInfo = DeviceDetectorService::fromRequest($request);
 
         return ActivityLog::create([
-            'user_id' => $request->user()?->id,
+            'user_id' => $userId ?? $request->user()?->id,
             'action' => $action,
             'description' => $description,
             ...$deviceInfo,

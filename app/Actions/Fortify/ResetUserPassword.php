@@ -27,6 +27,6 @@ class ResetUserPassword implements ResetsUserPasswords
             'password' => $input['password'],
         ])->save();
 
-        ActivityLoggerService::log(request(), 'auth.password_reset', "Contraseña restablecida: \"{$user->name}\"");
+        ActivityLoggerService::log(request(), 'auth.password_reset', "Contraseña restablecida: \"{$user->name}\"", $user->id);
     }
 }

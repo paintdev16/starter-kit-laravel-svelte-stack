@@ -29,9 +29,9 @@ class SecurityTest extends TestCase
 
         $this->actingAs($user)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('security.edit'))
+            ->get(route('profile.show'))
             ->assertInertia(fn (Assert $page) => $page
-                ->component('settings/Security')
+                ->component('profile/Index')
                 ->where('canManagePasskeys', true)
                 ->where('passkeys', [])
                 ->where('canManageTwoFactor', true)
@@ -39,21 +39,11 @@ class SecurityTest extends TestCase
             );
     }
 
-    public function test_security_page_requires_password_confirmation_when_enabled()
+    public function test_security_page_is_redirected_to_login_when_not_authenticated()
     {
-        $this->skipUnlessFortifyHas(Features::twoFactorAuthentication());
+        $response = $this->get(route('security.edit'));
 
-        $user = User::factory()->create();
-
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-        ]);
-
-        $response = $this->actingAs($user)
-            ->get(route('security.edit'));
-
-        $response->assertRedirect(route('password.confirm'));
+        $response->assertRedirect(route('login'));
     }
 
     public function test_security_page_renders_without_two_factor_when_feature_is_disabled()
@@ -66,15 +56,11 @@ class SecurityTest extends TestCase
 
         $this->actingAs($user)
             ->withSession(['auth.password_confirmed_at' => time()])
-            ->get(route('security.edit'))
+            ->get(route('profile.show'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('settings/Security')
-                ->where('canManagePasskeys', false)
-                ->where('passkeys', [])
-                ->where('canManageTwoFactor', false)
-                ->missing('twoFactorEnabled')
-                ->missing('requiresConfirmation'),
+                ->component('profile/Index')
+                ->where('canManageTwoFactor', false),
             );
     }
 

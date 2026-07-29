@@ -56,9 +56,7 @@ class HandleInertiaRequests extends Middleware
                 'device_type' => $lastLogin->device_type,
             ] : null,
             'auth' => [
-                'user' => $request->user() ? tap($request->user()->load('roles', 'permissions', 'avatars'), function (User $u) {
-                    $u->setAttribute('avatar', $u->currentAvatarUrl());
-                }) : null,
+                'user' => $request->user()?->load('roles', 'permissions', 'avatars'),
                 'roles' => $request->user()?->getRoleNames(),
                 'permissions' => $request->user()?->getAllPermissions()->pluck('name'),
                 'isLastRoot' => $request->user()?->isRoot() && User::role('root')->count() <= 1,
