@@ -8,7 +8,7 @@
 		orientation = "vertical",
 		children,
 		...restProps
-	}: WithoutChildren<ScrollAreaPrimitive.ScrollbarProps> = $props();
+	}: WithoutChildren<ScrollAreaPrimitive.ScrollbarProps> & { children?: import('svelte').Snippet } = $props();
 </script>
 
 <ScrollAreaPrimitive.Scrollbar

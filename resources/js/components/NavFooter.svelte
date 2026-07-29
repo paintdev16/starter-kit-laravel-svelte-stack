@@ -22,6 +22,7 @@
     <SidebarGroupContent>
         <SidebarMenu>
             {#each items as item (toUrl(item.href))}
+                {@const Icon = item.icon}
                 <SidebarMenuItem>
                     <SidebarMenuButton
                         class="text-sidebar-foreground/70 hover:text-sidebar-foreground"
@@ -33,9 +34,8 @@
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                {#if item.icon}
-                                    <svelte:component
-                                        this={item.icon}
+                                {#if Icon}
+                                    <Icon
                                         class="size-4 shrink-0"
                                     />
                                 {/if}

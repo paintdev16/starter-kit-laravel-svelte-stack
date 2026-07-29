@@ -109,44 +109,44 @@
                             class="flex h-full flex-1 flex-col justify-between space-y-4 pt-6 pb-10"
                         >
                             <nav class="-mx-3 space-y-1">
-                                {#each mainNavItems as item (toUrl(item.href))}
-                                    <Link
-                                        href={toUrl(item.href)}
-                                        class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {url.whenCurrentUrl(
-                                            item.href,
-                                            url.currentUrl,
-                                            activeItemStyles,
-                                            '',
-                                        ) ?? ''}"
-                                    >
-                                        {#if item.icon}
-                                            <svelte:component
-                                                this={item.icon}
-                                                class="h-5 w-5"
-                                            />
-                                        {/if}
-                                        {item.title}
-                                    </Link>
-                                {/each}
-                            </nav>
-                            <div class="flex flex-col space-y-4">
-                                {#each rightNavItems as item (toUrl(item.href))}
-                                    <a
-                                        href={toUrl(item.href)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="flex items-center space-x-2 text-sm font-medium"
-                                    >
-                                        {#if item.icon}
-                                            <svelte:component
-                                                this={item.icon}
-                                                class="h-5 w-5"
-                                            />
-                                        {/if}
-                                        <span>{item.title}</span>
-                                    </a>
-                                {/each}
-                            </div>
+                                        {#each mainNavItems as navItem (toUrl(navItem.href))}
+                                            {@const NavIcon = navItem.icon}
+                                            <Link
+                                                href={toUrl(navItem.href)}
+                                                class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {url.whenCurrentUrl(
+                                                    navItem.href,
+                                                    url.currentUrl,
+                                                    activeItemStyles,
+                                                    '',
+                                                ) ?? ''}"
+                                            >
+                                                {#if NavIcon}
+                                                    <NavIcon
+                                                        class="h-5 w-5"
+                                                    />
+                                                {/if}
+                                                {navItem.title}
+                                            </Link>
+                                        {/each}
+                                    </nav>
+                                    <div class="flex flex-col space-y-4">
+                                        {#each rightNavItems as rightItem (toUrl(rightItem.href))}
+                                            {@const RightIcon = rightItem.icon}
+                                            <a
+                                                href={toUrl(rightItem.href)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="flex items-center space-x-2 text-sm font-medium"
+                                            >
+                                                {#if RightIcon}
+                                                    <RightIcon
+                                                        class="h-5 w-5"
+                                                    />
+                                                {/if}
+                                                <span>{rightItem.title}</span>
+                                            </a>
+                                        {/each}
+                                    </div>
                         </div>
                     </SheetContent>
                 </Sheet>
@@ -162,28 +162,28 @@
                     <NavigationMenuList
                         class="flex h-full items-stretch space-x-2"
                     >
-                        {#each mainNavItems as item (toUrl(item.href))}
+                        {#each mainNavItems as navItem (toUrl(navItem.href))}
+                            {@const NavIcon = navItem.icon}
                             <NavigationMenuItem
                                 class="relative flex h-full items-center"
                             >
                                 <Link
                                     class="{navigationMenuTriggerStyle()} {url.whenCurrentUrl(
-                                        item.href,
+                                        navItem.href,
                                         url.currentUrl,
                                         activeItemStyles,
                                         '',
                                     ) ?? ''} h-9 cursor-pointer px-4"
-                                    href={toUrl(item.href)}
+                                    href={toUrl(navItem.href)}
                                 >
-                                    {#if item.icon}
-                                        <svelte:component
-                                            this={item.icon}
+                                    {#if NavIcon}
+                                        <NavIcon
                                             class="mr-2 h-4 w-4"
                                         />
                                     {/if}
-                                    {item.title}
+                                    {navItem.title}
                                 </Link>
-                                {#if url.isCurrentUrl(item.href, url.currentUrl)}
+                                {#if url.isCurrentUrl(navItem.href, url.currentUrl)}
                                     <div
                                         class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-foreground"
                                     ></div>
@@ -207,30 +207,32 @@
                     </Button>
 
                     <div class="hidden space-x-1 lg:flex">
-                        {#each rightNavItems as item (toUrl(item.href))}
+                        {#each rightNavItems as rightItem (toUrl(rightItem.href))}
+                            {@const RightIcon = rightItem.icon}
                             <TooltipProvider delayDuration={0}>
                                 <Tooltip>
                                     <TooltipTrigger>
                                         {#snippet child({ props })}
                                             <a
-                                                href={toUrl(item.href)}
+                                                href={toUrl(rightItem.href)}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 {...props}
                                                 class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 w-9 group cursor-pointer"
                                             >
                                                 <span class="sr-only"
-                                                    >{item.title}</span
+                                                    >{rightItem.title}</span
                                                 >
-                                                <svelte:component
-                                                    this={item.icon}
-                                                    class="size-5 opacity-80 group-hover:opacity-100"
-                                                />
+                                                {#if RightIcon}
+                                                    <RightIcon
+                                                        class="size-5 opacity-80 group-hover:opacity-100"
+                                                    />
+                                                {/if}
                                             </a>
                                         {/snippet}
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>{item.title}</p>
+                                        <p>{rightItem.title}</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>

@@ -26,7 +26,10 @@
                 {:else}
                     <BreadcrumbLink>
                         {#snippet child({ props })}
-                            <Link {...props} href={item.href}>
+                            <Link
+                                {...(props as any)}
+                                href={item.href}
+                            >
                                 {item.title}
                             </Link>
                         {/snippet}

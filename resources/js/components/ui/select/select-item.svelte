@@ -2,6 +2,12 @@
 	import { Select as SelectPrimitive } from "bits-ui";
 	import { cn, type WithoutChildren } from "@/lib/utils";
 	import CheckIcon from '@lucide/svelte/icons/check';
+	import type { Snippet } from "svelte";
+
+	type ItemSnippetProps = {
+		selected: boolean;
+		highlighted: boolean;
+	};
 
 	let {
 		ref = $bindable(null),
@@ -10,7 +16,7 @@
 		label,
 		children: childrenProp,
 		...restProps
-	}: WithoutChildren<SelectPrimitive.ItemProps> = $props();
+	}: WithoutChildren<SelectPrimitive.ItemProps> & { children?: Snippet<[ItemSnippetProps]> } = $props();
 </script>
 
 <SelectPrimitive.Item

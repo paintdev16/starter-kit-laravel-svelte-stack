@@ -17,6 +17,7 @@
     	scrollbarXClasses?: string | undefined;
     	scrollbarYClasses?: string | undefined;
     	viewportRef?: HTMLElement | null;
+    	children?: import('svelte').Snippet;
     } = $props();
 </script>
 

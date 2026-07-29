@@ -592,7 +592,7 @@
                                                     link.label,
                                                 )}
                                                 <PaginationLink
-                                                    page={{ value: pageNum }}
+                                                    page={{ value: pageNum, type: 'page' }}
                                                     isActive={pageNum ===
                                                         users.current_page}
                                                 >

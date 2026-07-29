@@ -11,6 +11,7 @@
 		...restProps
 }: WithoutChildren<SelectPrimitive.TriggerProps> & {
     	size?: "sm" | "default";
+    	children?: import('svelte').Snippet;
     } = $props();
 </script>
 

@@ -1,13 +1,23 @@
 <script lang="ts">
 	import { PinInput as InputOTPPrimitive } from "bits-ui";
 	import { cn } from "@/lib/utils.js";
+	import type { Snippet } from "svelte";
+
+	type PinInputRootSnippetProps = {
+		cells: { char: string | null | undefined; isActive: boolean; hasFakeCaret: boolean }[];
+		isFocused: boolean;
+		isHovering: boolean;
+	};
 
 	let {
 		ref = $bindable(null),
 		class: className,
 		value = $bindable(""),
+		children: snippet,
 		...restProps
-	}: InputOTPPrimitive.RootProps = $props();
+	}: Omit<InputOTPPrimitive.RootProps, "children"> & {
+		children?: Snippet<[PinInputRootSnippetProps]>;
+	} = $props();
 </script>
 
 <InputOTPPrimitive.Root
@@ -20,4 +30,10 @@
 		className
 	)}
 	{...restProps}
-/>
+>
+	{#snippet children(propz)}
+		{#if snippet}
+			{@render snippet(propz)}
+		{/if}
+	{/snippet}
+</InputOTPPrimitive.Root>

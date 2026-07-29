@@ -67,7 +67,7 @@
             href={logout()}
             as="button"
             onclick={handleLogout(
-                typeof props.onclick === 'function' ? props.onclick : undefined,
+                typeof props.onclick === 'function' ? (props.onclick as () => void) : undefined,
             )}
             data-test="logout-button"
         >

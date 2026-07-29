@@ -139,19 +139,19 @@
                             Equipos
                         </DropdownMenuLabel>
                         <DropdownMenuGroup>
-                            {#each teams as team (team.name)}
-                                <DropdownMenuItem
-                                    class="gap-2 p-2 {team.name === 'Acme Inc'
-                                        ? 'bg-accent'
-                                        : ''}"
-                                >
-                                    <div
-                                        class="flex size-6 items-center justify-center rounded-md border"
-                                    >
-                                        <svelte:component
-                                            this={team.icon}
-                                            class="size-4 shrink-0"
-                                        />
+                                    {#each teams as team (team.name)}
+                                        {@const Icon = team.icon}
+                                        <DropdownMenuItem
+                                            class="gap-2 p-2 {team.name === 'Acme Inc'
+                                                ? 'bg-accent'
+                                                : ''}"
+                                        >
+                                            <div
+                                                class="flex size-6 items-center justify-center rounded-md border"
+                                            >
+                                                <Icon
+                                                    class="size-4 shrink-0"
+                                                />
                                     </div>
                                     {team.name}
                                     <DropdownMenuShortcut
@@ -213,19 +213,20 @@
                         </SidebarMenuButton>
                     </SidebarMenuItem>
 
-                    {#each navigation as item (item.title)}
-                        <Collapsible open={item.open} class="group/collapsible">
+                    {#each navigation as navItem (navItem.title)}
+                        {@const NavItemIcon = navItem.icon}
+                        <Collapsible open={navItem.open} class="group/collapsible">
                             <SidebarMenuItem>
                                 <CollapsibleTrigger>
                                     {#snippet child({ props })}
                                         <SidebarMenuButton
                                             {...props}
-                                            tooltipContent={item.title}
+                                            tooltipContent={navItem.title}
                                         >
-                                            <svelte:component
-                                                this={item.icon}
-                                            />
-                                            <span>{item.title}</span>
+                                            {#if NavItemIcon}
+                                                <NavItemIcon />
+                                            {/if}
+                                            <span>{navItem.title}</span>
                                             <ChevronRight
                                                 class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
                                             />
@@ -234,7 +235,7 @@
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
                                     <SidebarMenuSub>
-                                        {#each item.items as subItem (subItem)}
+                                        {#each navItem.items as subItem (subItem)}
                                             <SidebarMenuSubItem>
                                                 <SidebarMenuSubButton>
                                                     {subItem}

@@ -2,13 +2,18 @@
 	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import { cn, type WithoutChildren } from "@/lib/utils";
+	import type { Snippet } from "svelte";
+
+	type RadioItemSnippetProps = {
+		checked: boolean;
+	};
 
 	let {
 		ref = $bindable(null),
 		class: className,
 		children: childrenProp,
 		...restProps
-	}: WithoutChildren<DropdownMenuPrimitive.RadioItemProps> = $props();
+	}: WithoutChildren<DropdownMenuPrimitive.RadioItemProps> & { children?: Snippet<[RadioItemSnippetProps]> } = $props();
 </script>
 
 <DropdownMenuPrimitive.RadioItem

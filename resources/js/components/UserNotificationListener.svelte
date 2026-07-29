@@ -4,6 +4,7 @@
     import Echo from '@/echo';
 
     onMount(() => {
+        if (!Echo) return;
         const channel = Echo.private('admin.users');
 
         channel.listen(
@@ -18,7 +19,7 @@
 
         return () => {
             channel.stopListening('.user.created');
-            Echo.leaveChannel('admin.users');
+            Echo?.leaveChannel('admin.users');
         };
     });
 </script>

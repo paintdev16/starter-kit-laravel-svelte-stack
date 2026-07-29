@@ -17,6 +17,7 @@
 		...restProps
 }: WithoutChildren<SelectPrimitive.ContentProps> & {
     	portalProps?: WithoutChildrenOrChild<ComponentProps<typeof SelectPortal>>;
+    	children?: import('svelte').Snippet;
     } = $props();
 </script>
 
