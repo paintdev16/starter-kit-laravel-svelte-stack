@@ -5,13 +5,16 @@
 
     onMount(() => {
         const channel = Echo.private('admin.users');
-        
-        channel.listen('.user.created', (e: { name: string; email: string }) => {
-            toast.success(`Nuevo usuario: ${e.name}`, {
-                description: e.email,
-                duration: 5000,
-            });
-        });
+
+        channel.listen(
+            '.user.created',
+            (e: { name: string; email: string }) => {
+                toast.success(`Nuevo usuario: ${e.name}`, {
+                    description: e.email,
+                    duration: 5000,
+                });
+            },
+        );
 
         return () => {
             channel.stopListening('.user.created');

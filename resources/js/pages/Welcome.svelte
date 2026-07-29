@@ -1,6 +1,16 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
-    import { ArrowRight, CheckCircle, Database, KeyRound, LayoutDashboard, Palette, ShieldCheck, Users, Zap } from '@lucide/svelte';
+    import {
+        ArrowRight,
+        CheckCircle,
+        Database,
+        KeyRound,
+        LayoutDashboard,
+        Palette,
+        ShieldCheck,
+        Users,
+        Zap,
+    } from '@lucide/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
     import { dashboard, login } from '@/routes';
@@ -418,7 +428,7 @@
                     aria-label="GitHub"
                 >
                     <!-- <Github class="size-4" /> -->
-                     xd
+                    xd
                 </a>
             </div>
         </div>

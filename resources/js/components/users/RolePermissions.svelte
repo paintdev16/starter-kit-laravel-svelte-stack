@@ -16,7 +16,6 @@
     import { ScrollArea } from '@/components/ui/scroll-area';
     import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 
-
     interface RoleItem {
         id: number;
         name: string;
@@ -192,8 +191,8 @@
         permError = '';
 
         if (!newPermissionName.trim()) {
-return;
-}
+            return;
+        }
 
         creatingPermission = true;
 
@@ -229,14 +228,14 @@ return;
 
     async function savePermission() {
         if (!editingPermission) {
-return;
-}
+            return;
+        }
 
         permError = '';
 
         if (!editPermName.trim()) {
-return;
-}
+            return;
+        }
 
         savingPermission = true;
 
@@ -360,8 +359,8 @@ return;
                 }
 
                 if (!o) {
-editingRole = null;
-}
+                    editingRole = null;
+                }
 
                 roleDialogOpen = o;
             }}
@@ -422,25 +421,25 @@ editingRole = null;
                         >
                             {#if permsLoading}
                                 <div class="space-y-1.5 p-1">
-                                {#each [1, 2, 3, 4] as _, i (i)}
-                                    <div
-                                        class="flex items-center gap-3 px-3 py-2.5"
-                                    >
-                                        <Skeleton
-                                            class="size-4 shrink-0 rounded-[4px]"
-                                        />
+                                    {#each [1, 2, 3, 4] as _, i (i)}
                                         <div
-                                            class="min-w-0 flex-1 space-y-1.5"
+                                            class="flex items-center gap-3 px-3 py-2.5"
                                         >
-                                            <Skeleton class="h-4 w-28" />
-                                            <Skeleton class="h-3 w-16" />
+                                            <Skeleton
+                                                class="size-4 shrink-0 rounded-[4px]"
+                                            />
+                                            <div
+                                                class="min-w-0 flex-1 space-y-1.5"
+                                            >
+                                                <Skeleton class="h-4 w-28" />
+                                                <Skeleton class="h-3 w-16" />
+                                            </div>
                                         </div>
-                                    </div>
-                                {/each}
-                            </div>
-                        {:else}
-                            <div class="space-y-0.5">
-                                {#each allPermissions as perm (perm.name)}
+                                    {/each}
+                                </div>
+                            {:else}
+                                <div class="space-y-0.5">
+                                    {#each allPermissions as perm (perm.name)}
                                         <label
                                             class="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-all hover:bg-accent/60"
                                         >
@@ -526,8 +525,8 @@ editingRole = null;
                         class="h-8 text-sm flex-1"
                         onkeydown={(e) => {
                             if (e.key === 'Enter') {
-savePermission();
-}
+                                savePermission();
+                            }
 
                             if (e.key === 'Escape') {
                                 editingPermission = null;
@@ -566,8 +565,8 @@ savePermission();
                         class="h-8 text-sm flex-1"
                         onkeydown={(e) => {
                             if (e.key === 'Enter') {
-createPermission();
-}
+                                createPermission();
+                            }
                         }}
                     />
                     <button
@@ -700,8 +699,8 @@ createPermission();
         open={deleteConfirmRole !== null}
         onOpenChange={(o) => {
             if (!o) {
-deleteConfirmRole = null;
-}
+                deleteConfirmRole = null;
+            }
         }}
     >
         {#if rolesLoading}
@@ -838,8 +837,8 @@ deleteConfirmRole = null;
         open={deleteConfirmPerm !== null}
         onOpenChange={(o) => {
             if (!o) {
-deleteConfirmPerm = null;
-}
+                deleteConfirmPerm = null;
+            }
         }}
     >
         <DialogContent class="sm:max-w-sm">

@@ -1,7 +1,8 @@
 <script module lang="ts">
     export const layout = {
         title: 'Olvidé mi contraseña',
-        description: 'Ingresa tu correo para recibir un enlace de restablecimiento',
+        description:
+            'Ingresa tu correo para recibir un enlace de restablecimiento',
     };
 </script>
 

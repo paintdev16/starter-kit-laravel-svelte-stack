@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { router } from "@inertiajs/svelte";
+    import { router } from '@inertiajs/svelte';
     import { UtensilsCrossed, Table2, User, Search } from '@lucide/svelte';
-    import { Badge } from "@/components/ui/badge/index.js";
-    import * as Command from "@/components/ui/command/index.js";
-    import Button from "./ui/button/button.svelte";
+    import { Badge } from '@/components/ui/badge/index.js';
+    import * as Command from '@/components/ui/command/index.js';
+    import Button from './ui/button/button.svelte';
 
     type SearchItem = {
         type: string;
@@ -18,7 +18,7 @@
     };
 
     let open = $state(false);
-    let query = $state("");
+    let query = $state('');
     let results = $state<SearchGroup[]>([]);
     let loading = $state(false);
 
@@ -26,16 +26,16 @@
 
     let hasResults = $derived(results.some((group) => group.items.length > 0));
 
-const icons: Record<string, typeof Search> = {
+    const icons: Record<string, typeof Search> = {
         table: Table2,
         product: UtensilsCrossed,
         user: User,
     };
 
     const typeLabels: Record<string, string> = {
-        table: "Mesa",
-        product: "Producto",
-        user: "Usuario",
+        table: 'Mesa',
+        product: 'Producto',
+        user: 'Usuario',
     };
 
     function handleQueryChange(value: string) {
@@ -58,7 +58,7 @@ const icons: Record<string, typeof Search> = {
                 const response = await fetch(url);
                 results = await response.json();
             } catch (error) {
-                console.error("[GlobalSearch] error:", error);
+                console.error('[GlobalSearch] error:', error);
                 results = [];
             } finally {
                 loading = false;
@@ -74,7 +74,7 @@ const icons: Record<string, typeof Search> = {
         open = value;
 
         if (!value) {
-            query = "";
+            query = '';
             results = [];
             clearTimeout(searchTimeout);
         }
@@ -86,7 +86,7 @@ const icons: Record<string, typeof Search> = {
     }
 
     function handleKeydown(e: KeyboardEvent) {
-        if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             open = !open;
         }

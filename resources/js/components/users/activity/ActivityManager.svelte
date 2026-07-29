@@ -72,8 +72,8 @@
             });
 
             if (!res.ok) {
-throw new Error(`${res.status}`);
-}
+                throw new Error(`${res.status}`);
+            }
 
             logs = await res.json();
         } catch (e) {
@@ -93,8 +93,8 @@ throw new Error(`${res.status}`);
             });
 
             if (!res.ok) {
-throw new Error(`${res.status}`);
-}
+                throw new Error(`${res.status}`);
+            }
 
             currentDevice = await res.json();
         } catch {

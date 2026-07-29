@@ -84,7 +84,9 @@
                     </p>
 
                     {#if page.props.status === 'verification-link-sent'}
-                        <div class="mt-2 text-sm font-medium text-success-foreground-soft">
+                        <div
+                            class="mt-2 text-sm font-medium text-success-foreground-soft"
+                        >
                             Se ha enviado un nuevo enlace de verificación a tu
                             correo.
                         </div>

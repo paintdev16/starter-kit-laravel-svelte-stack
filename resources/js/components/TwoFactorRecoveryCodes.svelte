@@ -50,8 +50,9 @@
             <LockKeyhole class="size-4" />Códigos de recuperación 2FA
         </CardTitle>
         <CardDescription>
-            Los códigos de recuperación te permiten recuperar el acceso si pierdes tu dispositivo 2FA.
-            Guárdalos en un gestor de contraseñas seguro.
+            Los códigos de recuperación te permiten recuperar el acceso si
+            pierdes tu dispositivo 2FA. Guárdalos en un gestor de contraseñas
+            seguro.
         </CardDescription>
     </CardHeader>
     <CardContent>
@@ -115,9 +116,9 @@
                         {/if}
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        Cada código de recuperación puede usarse una sola vez
-                        y se eliminará después de usarlo. Si necesitas más,
-                        haz clic en <span class="font-bold">Regenerar códigos</span> arriba.
+                        Cada código de recuperación puede usarse una sola vez y
+                        se eliminará después de usarlo. Si necesitas más, haz
+                        clic en <span class="font-bold">Regenerar códigos</span> arriba.
                     </p>
                 </div>
             {/if}

@@ -8,7 +8,9 @@ const DEVICE_ICON_MAP: [string[], Component][] = [
     [['laptop', 'notebook'], Laptop],
 ];
 
-export function getDeviceIcon(deviceType: string | null | undefined): Component {
+export function getDeviceIcon(
+    deviceType: string | null | undefined,
+): Component {
     const type = deviceType?.toLowerCase() ?? '';
     const match = DEVICE_ICON_MAP.find(([keywords]) =>
         keywords.some((k) => type.includes(k)),

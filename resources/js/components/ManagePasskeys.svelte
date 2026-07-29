@@ -44,11 +44,16 @@
                     <div
                         class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary"
                     >
-                        <KeyRound class="h-7 w-7 text-secondary-foreground-soft" />
+                        <KeyRound
+                            class="h-7 w-7 text-secondary-foreground-soft"
+                        />
                     </div>
-                    <p class="font-medium text-foreground">Sin llaves de acceso</p>
+                    <p class="font-medium text-foreground">
+                        Sin llaves de acceso
+                    </p>
                     <p class="mt-1 text-sm text-muted-foreground">
-                        Añade una llave de acceso para iniciar sesión sin contraseña
+                        Añade una llave de acceso para iniciar sesión sin
+                        contraseña
                     </p>
                 </div>
             {/if}

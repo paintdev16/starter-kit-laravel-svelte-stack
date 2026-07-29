@@ -54,8 +54,7 @@
     const auth = $derived(page.props.auth);
     const url = currentUrlState();
 
-    const activeItemStyles =
-        'bg-muted text-foreground font-semibold';
+    const activeItemStyles = 'bg-muted text-foreground font-semibold';
 
     const mainNavItems: NavItem[] = [
         {
@@ -98,7 +97,9 @@
                         {/snippet}
                     </SheetTrigger>
                     <SheetContent side="left" class="w-[300px] p-6">
-                        <SheetTitle class="sr-only">Menú de navegación</SheetTitle>
+                        <SheetTitle class="sr-only"
+                            >Menú de navegación</SheetTitle
+                        >
                         <SheetHeader class="flex justify-start text-left">
                             <AppLogoIcon
                                 class="size-6 fill-current text-foreground"
@@ -119,7 +120,10 @@
                                         ) ?? ''}"
                                     >
                                         {#if item.icon}
-                                            <svelte:component this={item.icon} class="h-5 w-5" />
+                                            <svelte:component
+                                                this={item.icon}
+                                                class="h-5 w-5"
+                                            />
                                         {/if}
                                         {item.title}
                                     </Link>
@@ -127,17 +131,20 @@
                             </nav>
                             <div class="flex flex-col space-y-4">
                                 {#each rightNavItems as item (toUrl(item.href))}
-<a
-                                                            href={toUrl(item.href)}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            class="flex items-center space-x-2 text-sm font-medium"
->
-                                                            {#if item.icon}
-                                                                <svelte:component this={item.icon} class="h-5 w-5" />
-                                                            {/if}
-                                                                <span>{item.title}</span>
-                                                            </a>
+                                    <a
+                                        href={toUrl(item.href)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="flex items-center space-x-2 text-sm font-medium"
+                                    >
+                                        {#if item.icon}
+                                            <svelte:component
+                                                this={item.icon}
+                                                class="h-5 w-5"
+                                            />
+                                        {/if}
+                                        <span>{item.title}</span>
+                                    </a>
                                 {/each}
                             </div>
                         </div>
@@ -169,7 +176,10 @@
                                     href={toUrl(item.href)}
                                 >
                                     {#if item.icon}
-                                        <svelte:component this={item.icon} class="mr-2 h-4 w-4" />
+                                        <svelte:component
+                                            this={item.icon}
+                                            class="mr-2 h-4 w-4"
+                                        />
                                     {/if}
                                     {item.title}
                                 </Link>
@@ -212,7 +222,10 @@
                                                 <span class="sr-only"
                                                     >{item.title}</span
                                                 >
-                                                <svelte:component this={item.icon} class="size-5 opacity-80 group-hover:opacity-100" />
+                                                <svelte:component
+                                                    this={item.icon}
+                                                    class="size-5 opacity-80 group-hover:opacity-100"
+                                                />
                                             </a>
                                         {/snippet}
                                     </TooltipTrigger>

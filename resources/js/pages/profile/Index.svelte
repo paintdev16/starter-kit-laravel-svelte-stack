@@ -108,8 +108,8 @@
         const file = target.files?.[0];
 
         if (!file) {
-return;
-}
+            return;
+        }
 
         previewFile = file;
         previewUrl = URL.createObjectURL(file);
@@ -118,8 +118,8 @@ return;
 
     function saveAvatar() {
         if (!previewFile) {
-return;
-}
+            return;
+        }
 
         avatarUploading = true;
         const formData = new FormData();
@@ -140,8 +140,8 @@ return;
 
     function cancelPreview() {
         if (previewUrl) {
-URL.revokeObjectURL(previewUrl);
-}
+            URL.revokeObjectURL(previewUrl);
+        }
 
         previewFile = null;
         previewUrl = null;
@@ -207,7 +207,9 @@ URL.revokeObjectURL(previewUrl);
                         <Camera class="size-4 text-white sm:size-5" />
                         <span
                             class="hidden text-[10px] font-medium text-white sm:block"
-                            >{avatars.length > 0 ? 'Ver fotos' : 'Agregar foto'}</span
+                            >{avatars.length > 0
+                                ? 'Ver fotos'
+                                : 'Agregar foto'}</span
                         >
                     </button>
                 {/if}
@@ -688,7 +690,11 @@ URL.revokeObjectURL(previewUrl);
                     <Button variant="outline" size="sm" onclick={cancelPreview}>
                         Cancelar
                     </Button>
-                    <Button size="sm" onclick={saveAvatar} disabled={avatarUploading}>
+                    <Button
+                        size="sm"
+                        onclick={saveAvatar}
+                        disabled={avatarUploading}
+                    >
                         {#if avatarUploading}
                             <Upload class="mr-1.5 size-3.5 animate-pulse" />
                             Guardando...
@@ -699,7 +705,11 @@ URL.revokeObjectURL(previewUrl);
                 </div>
             {:else}
                 <div class="flex gap-2">
-                    <Button variant="outline" size="sm" onclick={triggerFileInput}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onclick={triggerFileInput}
+                    >
                         <Camera class="mr-1.5 size-3.5" />
                         {latestAvatar ? 'Cambiar' : 'Subir foto'}
                     </Button>

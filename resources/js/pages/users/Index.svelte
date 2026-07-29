@@ -242,16 +242,16 @@
         let fieldErrors: Record<string, string> = {};
 
         if (!userFormName.trim()) {
-fieldErrors.name = 'El nombre es obligatorio';
-}
+            fieldErrors.name = 'El nombre es obligatorio';
+        }
 
         if (!userFormEmail.trim()) {
-fieldErrors.email = 'El email es obligatorio';
-}
+            fieldErrors.email = 'El email es obligatorio';
+        }
 
         if (!editingUser && !userFormPassword.trim()) {
-fieldErrors.password = 'La contraseÃ±a es obligatoria';
-}
+            fieldErrors.password = 'La contraseÃ±a es obligatoria';
+        }
 
         if (Object.keys(fieldErrors).length > 0) {
             userFormErrors = fieldErrors;
@@ -295,8 +295,8 @@ fieldErrors.password = 'La contraseÃ±a es obligatoria';
 
     function deleteUser() {
         if (!deleteConfirmUser) {
-return;
-}
+            return;
+        }
 
         deletingUser = true;
         router.delete(`/users/${deleteConfirmUser.id}`, {
@@ -324,8 +324,8 @@ return;
             });
 
             if (!res.ok) {
-throw new Error(`${res.status} ${res.statusText}`);
-}
+                throw new Error(`${res.status} ${res.statusText}`);
+            }
 
             currentDevice = await res.json();
         } catch (e) {
@@ -345,8 +345,8 @@ throw new Error(`${res.status} ${res.statusText}`);
             });
 
             if (!res.ok) {
-throw new Error(`${res.status} ${res.statusText}`);
-}
+                throw new Error(`${res.status} ${res.statusText}`);
+            }
 
             activityGroups = await res.json();
         } catch (e) {
@@ -582,11 +582,11 @@ throw new Error(`${res.status} ${res.statusText}`);
                                         disabled={users.current_page <= 1}
                                     />
                                 </PaginationItem>
-                                 {#each users.links as link (link.label)}
-                                     {#if !/previous|next/i.test(link.label)}
-                                         <PaginationItem>
-                                             {#if link.label === '...'}
-                                                 <PaginationEllipsis />
+                                {#each users.links as link (link.label)}
+                                    {#if !/previous|next/i.test(link.label)}
+                                        <PaginationItem>
+                                            {#if link.label === '...'}
+                                                <PaginationEllipsis />
                                             {:else if link.url}
                                                 {@const pageNum = Number(
                                                     link.label,
@@ -1047,8 +1047,8 @@ throw new Error(`${res.status} ${res.statusText}`);
     open={deleteConfirmUser !== null}
     onOpenChange={(o) => {
         if (!o) {
-deleteConfirmUser = null;
-}
+            deleteConfirmUser = null;
+        }
     }}
 >
     <DialogContent class="sm:max-w-sm">

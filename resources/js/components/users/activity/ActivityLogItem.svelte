@@ -38,44 +38,44 @@
         action: string,
     ): 'default' | 'secondary' | 'destructive' | 'outline' {
         if (action.includes('created')) {
-return 'default';
-}
+            return 'default';
+        }
 
         if (action.includes('updated') || action.includes('changed')) {
-return 'secondary';
-}
+            return 'secondary';
+        }
 
         if (action.includes('deleted')) {
-return 'destructive';
-}
+            return 'destructive';
+        }
 
         if (action.includes('login')) {
-return 'outline';
-}
+            return 'outline';
+        }
 
         return 'secondary';
     }
 
     function actionLabel(action: string): string {
         if (action.includes('created')) {
-return 'Creación';
-}
+            return 'Creación';
+        }
 
         if (action.includes('updated') || action.includes('changed')) {
-return 'Actualización';
-}
+            return 'Actualización';
+        }
 
         if (action.includes('deleted')) {
-return 'Eliminación';
-}
+            return 'Eliminación';
+        }
 
         if (action.includes('login')) {
-return 'Login';
-}
+            return 'Login';
+        }
 
         if (action.includes('logout')) {
-return 'Logout';
-}
+            return 'Logout';
+        }
 
         return action;
     }

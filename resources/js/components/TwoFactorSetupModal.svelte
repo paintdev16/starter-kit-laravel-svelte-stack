@@ -55,8 +55,7 @@
         if (showVerificationStep) {
             return {
                 title: 'Verificar código de autenticación',
-                description:
-                    'Ingresa el código de 6 dígitos de tu aplicación',
+                description: 'Ingresa el código de 6 dígitos de tu aplicación',
                 buttonText: 'Continuar',
             };
         }

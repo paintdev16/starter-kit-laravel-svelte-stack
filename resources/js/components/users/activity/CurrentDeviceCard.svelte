@@ -14,8 +14,8 @@
 
     let fields = $derived.by(() => {
         if (!device) {
-return [];
-}
+            return [];
+        }
 
         return [
             {

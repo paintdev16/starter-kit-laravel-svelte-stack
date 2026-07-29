@@ -1,5 +1,5 @@
-﻿@import "tailwindcss";
-@import "tw-animate-css";
+﻿@import 'tailwindcss';
+@import 'tw-animate-css';
 
 /* =========================
    SOURCES (Laravel / Blade)
@@ -16,13 +16,10 @@
 @custom-variant data-checked (&[data-state='checked']);
 @custom-variant data-indeterminate (&[data-state='indeterminate']);
 
-
-
 /* =========================
    THEME TOKENS (TAILWIND v4)
 ========================= */
 @theme inline {
-
     /* =========================
        TYPOGRAPHY
     ========================= */
@@ -105,20 +102,20 @@
     --color-selection: var(--selection);
     --color-selection-foreground: var(--selection-foreground);
 
-      --color-card-success: var(--card-success);
-  --color-card-success-border: var(--card-success-border);
+    --color-card-success: var(--card-success);
+    --color-card-success-border: var(--card-success-border);
 
-  --color-card-info: var(--card-info);
-  --color-card-info-border: var(--card-info-border);
+    --color-card-info: var(--card-info);
+    --color-card-info-border: var(--card-info-border);
 
-  --color-card-warning: var(--card-warning);
-  --color-card-warning-border: var(--card-warning-border);
+    --color-card-warning: var(--card-warning);
+    --color-card-warning-border: var(--card-warning-border);
 
-  --color-card-destructive: var(--card-destructive);
-  --color-card-destructive-border: var(--card-destructive-border);
+    --color-card-destructive: var(--card-destructive);
+    --color-card-destructive-border: var(--card-destructive-border);
 
-  --color-card-primary: var(--card-primary);
-  --color-card-primary-border: var(--card-primary-border);
+    --color-card-primary: var(--card-primary);
+    --color-card-primary-border: var(--card-primary-border);
 }
 
 /* =========================
@@ -217,13 +214,13 @@
 
     --selection: hsl(239 84% 95%);
     --selection-foreground: hsl(239 84% 40%);
-        --card-success: hsl(151 70% 45% / 0.08);
+    --card-success: hsl(151 70% 45% / 0.08);
     --card-success-border: hsl(151 60% 45% / 0.22);
 
     --card-info: hsl(201 95% 50% / 0.08);
     --card-info-border: hsl(201 85% 50% / 0.22);
 
-    --card-warning: hsl(38 95% 52% / 0.10);
+    --card-warning: hsl(38 95% 52% / 0.1);
     --card-warning-border: hsl(38 90% 52% / 0.24);
 
     --card-destructive: hsl(350 84% 60% / 0.08);
@@ -346,7 +343,7 @@
     --card-info-border: hsl(201 94% 60% / 0.28);
 
     --card-warning: hsl(40 96% 60% / 0.14);
-    --card-warning-border: hsl(40 96% 60% / 0.30);
+    --card-warning-border: hsl(40 96% 60% / 0.3);
 
     --card-destructive: hsl(350 84% 67% / 0.12);
     --card-destructive-border: hsl(350 84% 67% / 0.28);
@@ -378,13 +375,12 @@
    COMPONENTS
 ========================= */
 @layer components {
-
     .app-sidebar-icon {
-        @apply flex size-8 aspect-square items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground;
+        @apply flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground;
     }
 
     .app-sidebar-user-avatar {
-        @apply flex size-8 aspect-square items-center justify-center rounded-lg bg-sidebar-accent text-xs font-semibold text-sidebar-accent-foreground ring-1 ring-sidebar-border;
+        @apply flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-accent text-xs font-semibold text-sidebar-accent-foreground ring-1 ring-sidebar-border;
     }
 
     .app-sidebar-dropdown {

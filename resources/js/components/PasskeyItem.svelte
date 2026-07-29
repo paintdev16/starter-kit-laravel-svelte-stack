@@ -81,13 +81,11 @@
                 Ya no podrás usarla para iniciar sesión.
             </DialogDescription>
             <DialogFooter>
-            <DialogClose>
-                {#snippet child({ props })}
-                    <Button {...props} variant="secondary">
-                        Cancelar
-                    </Button>
-                {/snippet}
-            </DialogClose>
+                <DialogClose>
+                    {#snippet child({ props })}
+                        <Button {...props} variant="secondary">Cancelar</Button>
+                    {/snippet}
+                </DialogClose>
                 <Button
                     variant="destructive"
                     disabled={isDeleting}

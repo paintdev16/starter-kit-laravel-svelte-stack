@@ -18,4 +18,4 @@
 
 <AppHead title="Actividad de usuarios" />
 
-<ActivityManager {filterUserId} active={true}/>
+<ActivityManager {filterUserId} active={true} />

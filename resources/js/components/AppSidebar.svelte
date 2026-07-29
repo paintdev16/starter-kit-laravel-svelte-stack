@@ -148,7 +148,10 @@
                                     <div
                                         class="flex size-6 items-center justify-center rounded-md border"
                                     >
-                                        <svelte:component this={team.icon} class="size-4 shrink-0" />
+                                        <svelte:component
+                                            this={team.icon}
+                                            class="size-4 shrink-0"
+                                        />
                                     </div>
                                     {team.name}
                                     <DropdownMenuShortcut
@@ -219,7 +222,9 @@
                                             {...props}
                                             tooltipContent={item.title}
                                         >
-                                            <svelte:component this={item.icon} />
+                                            <svelte:component
+                                                this={item.icon}
+                                            />
                                             <span>{item.title}</span>
                                             <ChevronRight
                                                 class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"

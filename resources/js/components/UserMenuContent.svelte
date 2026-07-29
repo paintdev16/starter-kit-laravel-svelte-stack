@@ -1,13 +1,13 @@
 ﻿<script lang="ts">
     import { Link, router } from '@inertiajs/svelte';
     import {
-    BadgeCheck,
-    Bell,
-    CreditCard,
-    LogOut,
-    Settings,
-    Sparkles,
-} from '@lucide/svelte';
+        BadgeCheck,
+        Bell,
+        CreditCard,
+        LogOut,
+        Settings,
+        Sparkles,
+    } from '@lucide/svelte';
     import {
         DropdownMenuGroup,
         DropdownMenuItem,
@@ -43,8 +43,7 @@
 </DropdownMenuGroup>
 <DropdownMenuSeparator />
 <DropdownMenuGroup>
-    <DropdownMenuItem
-        ><BadgeCheck class="mr-2 size-4" />Cuenta</DropdownMenuItem
+    <DropdownMenuItem><BadgeCheck class="mr-2 size-4" />Cuenta</DropdownMenuItem
     >
     <DropdownMenuItem
         ><CreditCard class="mr-2 size-4" />Facturación</DropdownMenuItem

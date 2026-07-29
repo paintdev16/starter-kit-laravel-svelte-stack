@@ -21,6 +21,6 @@
             <Breadcrumbs {breadcrumbs} />
         {/if}
         <AppearanceTabs />
-        <GlobalSearchController/>
+        <GlobalSearchController />
     </div>
 </header>

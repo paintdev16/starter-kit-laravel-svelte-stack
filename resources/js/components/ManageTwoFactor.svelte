@@ -46,7 +46,8 @@
                 <div>
                     {#if twoFactorAuth.hasSetupData()}
                         <Button onclick={() => (showSetupModal = true)}>
-                            <ShieldCheck class="size-4" />Continuar configuración
+                            <ShieldCheck class="size-4" />Continuar
+                            configuración
                         </Button>
                     {:else}
                         <Form
