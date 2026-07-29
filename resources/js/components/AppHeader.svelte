@@ -109,44 +109,40 @@
                             class="flex h-full flex-1 flex-col justify-between space-y-4 pt-6 pb-10"
                         >
                             <nav class="-mx-3 space-y-1">
-                                        {#each mainNavItems as navItem (toUrl(navItem.href))}
-                                            {@const NavIcon = navItem.icon}
-                                            <Link
-                                                href={toUrl(navItem.href)}
-                                                class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {url.whenCurrentUrl(
-                                                    navItem.href,
-                                                    url.currentUrl,
-                                                    activeItemStyles,
-                                                    '',
-                                                ) ?? ''}"
-                                            >
-                                                {#if NavIcon}
-                                                    <NavIcon
-                                                        class="h-5 w-5"
-                                                    />
-                                                {/if}
-                                                {navItem.title}
-                                            </Link>
-                                        {/each}
-                                    </nav>
-                                    <div class="flex flex-col space-y-4">
-                                        {#each rightNavItems as rightItem (toUrl(rightItem.href))}
-                                            {@const RightIcon = rightItem.icon}
-                                            <a
-                                                href={toUrl(rightItem.href)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="flex items-center space-x-2 text-sm font-medium"
-                                            >
-                                                {#if RightIcon}
-                                                    <RightIcon
-                                                        class="h-5 w-5"
-                                                    />
-                                                {/if}
-                                                <span>{rightItem.title}</span>
-                                            </a>
-                                        {/each}
-                                    </div>
+                                {#each mainNavItems as navItem (toUrl(navItem.href))}
+                                    {@const NavIcon = navItem.icon}
+                                    <Link
+                                        href={toUrl(navItem.href)}
+                                        class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent {url.whenCurrentUrl(
+                                            navItem.href,
+                                            url.currentUrl,
+                                            activeItemStyles,
+                                            '',
+                                        ) ?? ''}"
+                                    >
+                                        {#if NavIcon}
+                                            <NavIcon class="h-5 w-5" />
+                                        {/if}
+                                        {navItem.title}
+                                    </Link>
+                                {/each}
+                            </nav>
+                            <div class="flex flex-col space-y-4">
+                                {#each rightNavItems as rightItem (toUrl(rightItem.href))}
+                                    {@const RightIcon = rightItem.icon}
+                                    <a
+                                        href={toUrl(rightItem.href)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="flex items-center space-x-2 text-sm font-medium"
+                                    >
+                                        {#if RightIcon}
+                                            <RightIcon class="h-5 w-5" />
+                                        {/if}
+                                        <span>{rightItem.title}</span>
+                                    </a>
+                                {/each}
+                            </div>
                         </div>
                     </SheetContent>
                 </Sheet>
@@ -177,9 +173,7 @@
                                     href={toUrl(navItem.href)}
                                 >
                                     {#if NavIcon}
-                                        <NavIcon
-                                            class="mr-2 h-4 w-4"
-                                        />
+                                        <NavIcon class="mr-2 h-4 w-4" />
                                     {/if}
                                     {navItem.title}
                                 </Link>

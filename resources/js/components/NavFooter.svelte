@@ -35,9 +35,7 @@
                                 rel="noopener noreferrer"
                             >
                                 {#if Icon}
-                                    <Icon
-                                        class="size-4 shrink-0"
-                                    />
+                                    <Icon class="size-4 shrink-0" />
                                 {/if}
                                 <span>{item.title}</span>
                             </a>

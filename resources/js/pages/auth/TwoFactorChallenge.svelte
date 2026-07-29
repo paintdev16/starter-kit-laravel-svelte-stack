@@ -72,7 +72,7 @@
                         >
                             {#snippet children({ cells })}
                                 <InputOTPGroup>
-                                    {#each cells as cell}
+                                    {#each cells as cell, i (i)}
                                         <InputOTPSlot {cell} />
                                     {/each}
                                 </InputOTPGroup>

@@ -132,7 +132,9 @@
                 const err = await res.json();
                 const rawErrors: unknown = err.errors;
                 const allErrors = rawErrors
-                    ? (Object.values(rawErrors as Record<string, unknown>).flat() as string[])
+                    ? (Object.values(
+                          rawErrors as Record<string, unknown>,
+                      ).flat() as string[])
                     : [];
                 roleNameError = roleName.trim()
                     ? allErrors[0] || 'Error al guardar el rol'

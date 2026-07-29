@@ -4,7 +4,10 @@
     import Echo from '@/echo';
 
     onMount(() => {
-        if (!Echo) return;
+        if (!Echo) {
+            return;
+        }
+
         const channel = Echo.private('admin.users');
 
         channel.listen(

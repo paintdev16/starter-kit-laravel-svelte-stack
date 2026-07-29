@@ -139,19 +139,17 @@
                             Equipos
                         </DropdownMenuLabel>
                         <DropdownMenuGroup>
-                                    {#each teams as team (team.name)}
-                                        {@const Icon = team.icon}
-                                        <DropdownMenuItem
-                                            class="gap-2 p-2 {team.name === 'Acme Inc'
-                                                ? 'bg-accent'
-                                                : ''}"
-                                        >
-                                            <div
-                                                class="flex size-6 items-center justify-center rounded-md border"
-                                            >
-                                                <Icon
-                                                    class="size-4 shrink-0"
-                                                />
+                            {#each teams as team (team.name)}
+                                {@const Icon = team.icon}
+                                <DropdownMenuItem
+                                    class="gap-2 p-2 {team.name === 'Acme Inc'
+                                        ? 'bg-accent'
+                                        : ''}"
+                                >
+                                    <div
+                                        class="flex size-6 items-center justify-center rounded-md border"
+                                    >
+                                        <Icon class="size-4 shrink-0" />
                                     </div>
                                     {team.name}
                                     <DropdownMenuShortcut
@@ -215,7 +213,10 @@
 
                     {#each navigation as navItem (navItem.title)}
                         {@const NavItemIcon = navItem.icon}
-                        <Collapsible open={navItem.open} class="group/collapsible">
+                        <Collapsible
+                            open={navItem.open}
+                            class="group/collapsible"
+                        >
                             <SidebarMenuItem>
                                 <CollapsibleTrigger>
                                     {#snippet child({ props })}
