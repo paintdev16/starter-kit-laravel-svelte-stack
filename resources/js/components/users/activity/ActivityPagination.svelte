@@ -1,13 +1,13 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
-    import type { PageLink } from './types';
     import Badge from '@/components/ui/badge/badge.svelte';
+    import type { PageLink } from './types';
 
     let { links }: { links: PageLink[] } = $props();
 </script>
 
 <div class="flex items-center justify-center gap-1 border-t px-5 py-4">
-    {#each links as link}
+    {#each links as link (link.url)}
         {#if link.url}
             <Link
                 href={link.url}

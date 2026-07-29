@@ -7,7 +7,6 @@
     import { Toaster } from '@/components/ui/sonner';
     import UserNotificationListener from '@/components/UserNotificationListener.svelte';
     import type { BreadcrumbItem } from '@/types';
-    import AppearanceTabs from '@/components/AppearanceTabs.svelte';
 
     let {
         breadcrumbs = [],

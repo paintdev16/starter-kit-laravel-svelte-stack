@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Link, page } from '@inertiajs/svelte';
+    import { ArrowRight, CheckCircle, Database, KeyRound, LayoutDashboard, Palette, ShieldCheck, Users, Zap } from '@lucide/svelte';
     import AppHead from '@/components/AppHead.svelte';
     import { toUrl } from '@/lib/utils';
     import { dashboard, login } from '@/routes';
     import { register } from '@/routes';
-    import { ArrowRight, CheckCircle, Database, KeyRound, LayoutDashboard, Palette, ShieldCheck, Users, Zap } from '@lucide/svelte';
 
     const auth = $derived(page.props.auth);
 
@@ -233,7 +233,7 @@
                     </p>
                 </div>
                 <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {#each features as feature}
+                    {#each features as feature (feature.title)}
                         <div
                             class="group relative overflow-hidden rounded-xl border bg-card p-6 transition-all hover:shadow-md hover:-translate-y-0.5"
                         >
@@ -274,7 +274,7 @@
                     <div
                         class="hidden md:block absolute left-1/2 top-1/3 h-px w-3/4 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-transparent via-border to-transparent"
                     ></div>
-                    {#each steps as step}
+                    {#each steps as step (step.num)}
                         <div
                             class="relative flex flex-col items-center text-center"
                         >

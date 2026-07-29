@@ -13,8 +13,19 @@
 
 <script lang="ts">
     import { Form, page, router } from '@inertiajs/svelte';
-    import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+    import Calendar from '@lucide/svelte/icons/calendar';
+    import Camera from '@lucide/svelte/icons/camera';
+    import ChevronRight from '@lucide/svelte/icons/chevron-right';
+    import KeyRound from '@lucide/svelte/icons/key-round';
+    import Mail from '@lucide/svelte/icons/mail';
+    import Pencil from '@lucide/svelte/icons/pencil';
+    import Shield from '@lucide/svelte/icons/shield';
+    import ShieldCheck from '@lucide/svelte/icons/shield-check';
+    import Trash2 from '@lucide/svelte/icons/trash-2';
+    import Upload from '@lucide/svelte/icons/upload';
+    import User from '@lucide/svelte/icons/user';
     import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+    import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
     import AppHead from '@/components/AppHead.svelte';
     import DeleteUser from '@/components/DeleteUser.svelte';
     import InputError from '@/components/InputError.svelte';
@@ -23,9 +34,6 @@
     import ManageTwoFactor from '@/components/ManageTwoFactor.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
     import TextLink from '@/components/TextLink.svelte';
-    import * as Card from '@/components/ui/card/index.js';
-    import * as Dialog from '@/components/ui/dialog/index.js';
-
     import {
         Avatar,
         AvatarFallback,
@@ -33,24 +41,12 @@
     } from '@/components/ui/avatar';
     import { Badge } from '@/components/ui/badge';
     import { Button } from '@/components/ui/button';
-
+    import * as Card from '@/components/ui/card/index.js';
+    import * as Dialog from '@/components/ui/dialog/index.js';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
-    import { send } from '@/routes/verification';
-    import Calendar from '@lucide/svelte/icons/calendar';
-    import ChevronRight from '@lucide/svelte/icons/chevron-right';
-    import Camera from '@lucide/svelte/icons/camera';
-    import KeyRound from '@lucide/svelte/icons/key-round';
-    import Mail from '@lucide/svelte/icons/mail';
-    import Pencil from '@lucide/svelte/icons/pencil';
-    import ShieldCheck from '@lucide/svelte/icons/shield-check';
-    import Shield from '@lucide/svelte/icons/shield';
-    import * as Tooltip from '@/components/ui/tooltip/index.js';
-    import Upload from '@lucide/svelte/icons/upload';
-    import User from '@lucide/svelte/icons/user';
-    import { X } from '@lucide/svelte';
-    import Trash2 from '@lucide/svelte/icons/trash-2';
     import Separator from '@/components/ui/separator/separator.svelte';
+    import { send } from '@/routes/verification';
 
     const userRoles = $derived<string[]>(
         Array.isArray(page.props.auth.roles) ? page.props.auth.roles : [],
@@ -110,14 +106,21 @@
     function onFileSelect(e: Event) {
         const target = e.currentTarget as HTMLInputElement;
         const file = target.files?.[0];
-        if (!file) return;
+
+        if (!file) {
+return;
+}
+
         previewFile = file;
         previewUrl = URL.createObjectURL(file);
         target.value = '';
     }
 
     function saveAvatar() {
-        if (!previewFile) return;
+        if (!previewFile) {
+return;
+}
+
         avatarUploading = true;
         const formData = new FormData();
         formData.append('avatar', previewFile);
@@ -136,7 +139,10 @@
     }
 
     function cancelPreview() {
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        if (previewUrl) {
+URL.revokeObjectURL(previewUrl);
+}
+
         previewFile = null;
         previewUrl = null;
     }
@@ -476,7 +482,7 @@
                                 Roles
                             </p>
                             <div class="flex flex-wrap gap-1.5">
-                                {#each userRoles as role}
+                                {#each userRoles as role (role)}
                                     <span
                                         class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground-soft"
                                     >
@@ -492,7 +498,7 @@
                                 Permisos
                             </p>
                             <div class="flex flex-wrap gap-1.5">
-                                {#each userPermissions as perm}
+                                {#each userPermissions as perm (perm)}
                                     <span
                                         class="inline-flex items-center rounded-md border bg-card px-2 py-0.5 text-[11px] font-medium text-card-foreground"
                                     >

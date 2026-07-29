@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Calendar, Globe, Monitor, MapPin } from '@lucide/svelte';
     import {
         Avatar,
         AvatarFallback,
@@ -7,7 +8,6 @@
     import { Badge } from '@/components/ui/badge';
     import { Separator } from '@/components/ui/separator';
     import * as Tooltip from '@/components/ui/tooltip';
-    import { Calendar, Globe, Monitor, MapPin } from '@lucide/svelte';
     import { getDeviceIcon } from './device-icons';
     import type { LogItem } from './types';
 
@@ -37,21 +37,46 @@
     function actionVariant(
         action: string,
     ): 'default' | 'secondary' | 'destructive' | 'outline' {
-        if (action.includes('created')) return 'default';
-        if (action.includes('updated') || action.includes('changed'))
-            return 'secondary';
-        if (action.includes('deleted')) return 'destructive';
-        if (action.includes('login')) return 'outline';
+        if (action.includes('created')) {
+return 'default';
+}
+
+        if (action.includes('updated') || action.includes('changed')) {
+return 'secondary';
+}
+
+        if (action.includes('deleted')) {
+return 'destructive';
+}
+
+        if (action.includes('login')) {
+return 'outline';
+}
+
         return 'secondary';
     }
 
     function actionLabel(action: string): string {
-        if (action.includes('created')) return 'Creación';
-        if (action.includes('updated') || action.includes('changed'))
-            return 'Actualización';
-        if (action.includes('deleted')) return 'Eliminación';
-        if (action.includes('login')) return 'Login';
-        if (action.includes('logout')) return 'Logout';
+        if (action.includes('created')) {
+return 'Creación';
+}
+
+        if (action.includes('updated') || action.includes('changed')) {
+return 'Actualización';
+}
+
+        if (action.includes('deleted')) {
+return 'Eliminación';
+}
+
+        if (action.includes('login')) {
+return 'Login';
+}
+
+        if (action.includes('logout')) {
+return 'Logout';
+}
+
         return action;
     }
 </script>

@@ -1,10 +1,11 @@
 ﻿<script lang="ts">
     import { Link } from '@inertiajs/svelte';
+    import { Users } from '@lucide/svelte';
     import AudioWaveform from '@lucide/svelte/icons/audio-waveform';
     import BookOpen from '@lucide/svelte/icons/book-open';
     import Bot from '@lucide/svelte/icons/bot';
-    import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
     import ChevronRight from '@lucide/svelte/icons/chevron-right';
+    import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
     import Command from '@lucide/svelte/icons/command';
     import GalleryVerticalEnd from '@lucide/svelte/icons/gallery-vertical-end';
     import LayoutDashboard from '@lucide/svelte/icons/layout-dashboard';
@@ -45,11 +46,10 @@
         SidebarMenuSubItem,
         SidebarRail,
     } from '@/components/ui/sidebar';
+    import { useSidebar } from '@/components/ui/sidebar';
     import { currentUrlState } from '@/lib/currentUrl.svelte';
     import { toUrl } from '@/lib/utils';
     import { dashboard } from '@/routes';
-    import { useSidebar } from '@/components/ui/sidebar';
-    import { Users } from '@lucide/svelte';
     import users from '@/routes/users';
 
     let { children }: { children?: Snippet } = $props();

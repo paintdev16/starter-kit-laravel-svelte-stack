@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Check, Pencil, Plus, Shield, Trash2, X } from '@lucide/svelte';
     import { Button } from '@/components/ui/button';
     import { Checkbox } from '@/components/ui/checkbox';
     import {
@@ -14,7 +15,6 @@
     import { Label } from '@/components/ui/label';
     import { ScrollArea } from '@/components/ui/scroll-area';
     import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
-    import { Check, Pencil, Plus, Shield, Trash2, X } from '@lucide/svelte';
 
 
     interface RoleItem {
@@ -77,6 +77,7 @@
             admin: 'border-card-info-border bg-card-info/40 hover:border-card-info-border/70 hover:bg-card-info/60',
             user: 'border-card-success-border bg-card-success/40 hover:border-card-success-border/70 hover:bg-card-success/60',
         };
+
         return (
             styles[name] ||
             'border-card-primary-border bg-card-primary/40 hover:border-card-primary-border/70 hover:bg-card-primary/60'
@@ -89,11 +90,13 @@
             admin: 'bg-card-info/80 text-info',
             user: 'bg-card-success/80 text-success',
         };
+
         return styles[name] || 'bg-card-primary/80 text-primary';
     }
 
     async function loadRoles() {
         rolesLoading = true;
+
         try {
             const [rolesRes, permsRes] = await Promise.all([
                 fetch('/admin/roles'),
@@ -120,6 +123,7 @@
 
     async function loadPermissionsOnly() {
         permsLoading = true;
+
         try {
             const permsRes = await fetch('/admin/permissions');
             allPermissions = await permsRes.json();
@@ -142,11 +146,15 @@
 
     async function saveRole() {
         roleNameError = '';
+
         if (!roleName.trim()) {
             roleNameError = 'El nombre del rol es obligatorio';
+
             return;
         }
+
         savingRole = true;
+
         try {
             const url = editingRole
                 ? `/admin/roles/${editingRole.id}`
@@ -166,14 +174,11 @@
                     permissions: selectedPermissions,
                 }),
             });
+
             if (!res.ok) {
-                const err = await res.json();
-                const allErrors = err.errors
-                    ? Object.values(err.errors).flat()
-                    : [];
-                // roleNameError = allErrors[0] || 'Error al guardar el rol';
                 return;
             }
+
             roleDialogOpen = false;
             await loadRoles();
         } catch {
@@ -185,8 +190,13 @@
 
     async function createPermission() {
         permError = '';
-        if (!newPermissionName.trim()) return;
+
+        if (!newPermissionName.trim()) {
+return;
+}
+
         creatingPermission = true;
+
         try {
             const res = await fetch('/admin/permissions', {
                 method: 'POST',
@@ -199,11 +209,14 @@
                 },
                 body: JSON.stringify({ name: newPermissionName.trim() }),
             });
+
             if (!res.ok) {
                 const err = await res.json();
                 permError = err.errors?.name?.[0] || 'Error al crear permiso';
+
                 return;
             }
+
             newPermissionName = '';
             permError = '';
             await loadRoles();
@@ -215,10 +228,18 @@
     }
 
     async function savePermission() {
-        if (!editingPermission) return;
+        if (!editingPermission) {
+return;
+}
+
         permError = '';
-        if (!editPermName.trim()) return;
+
+        if (!editPermName.trim()) {
+return;
+}
+
         savingPermission = true;
+
         try {
             const res = await fetch(
                 `/admin/permissions/${editingPermission.id}`,
@@ -234,12 +255,15 @@
                     body: JSON.stringify({ name: editPermName.trim() }),
                 },
             );
+
             if (!res.ok) {
                 const err = await res.json();
                 permError =
                     err.errors?.name?.[0] || 'Error al actualizar permiso';
+
                 return;
             }
+
             editingPermission = null;
             editPermName = '';
             permError = '';
@@ -253,6 +277,7 @@
 
     async function deletePermission(perm: PermissionItem) {
         deletingPerm = true;
+
         try {
             const res = await fetch(`/admin/permissions/${perm.id}`, {
                 method: 'DELETE',
@@ -263,6 +288,7 @@
                             ?.getAttribute('content') ?? '',
                 },
             });
+
             if (res.ok) {
                 deleteConfirmPerm = null;
                 await loadRoles();
@@ -274,6 +300,7 @@
 
     async function deleteRole(role: RoleItem) {
         deletingRole = true;
+
         try {
             const res = await fetch(`/admin/roles/${role.id}`, {
                 method: 'DELETE',
@@ -284,6 +311,7 @@
                             ?.getAttribute('content') ?? '',
                 },
             });
+
             if (res.ok) {
                 deleteConfirmRole = null;
                 await loadRoles();
@@ -330,7 +358,11 @@
                     selectedPermissions = [];
                     loadPermissionsOnly();
                 }
-                if (!o) editingRole = null;
+
+                if (!o) {
+editingRole = null;
+}
+
                 roleDialogOpen = o;
             }}
         >
@@ -390,25 +422,25 @@
                         >
                             {#if permsLoading}
                                 <div class="space-y-1.5 p-1">
-                                    {#each [1, 2, 3, 4] as _}
+                                {#each [1, 2, 3, 4] as _, i (i)}
+                                    <div
+                                        class="flex items-center gap-3 px-3 py-2.5"
+                                    >
+                                        <Skeleton
+                                            class="size-4 shrink-0 rounded-[4px]"
+                                        />
                                         <div
-                                            class="flex items-center gap-3 px-3 py-2.5"
+                                            class="min-w-0 flex-1 space-y-1.5"
                                         >
-                                            <Skeleton
-                                                class="size-4 shrink-0 rounded-[4px]"
-                                            />
-                                            <div
-                                                class="min-w-0 flex-1 space-y-1.5"
-                                            >
-                                                <Skeleton class="h-4 w-28" />
-                                                <Skeleton class="h-3 w-16" />
-                                            </div>
+                                            <Skeleton class="h-4 w-28" />
+                                            <Skeleton class="h-3 w-16" />
                                         </div>
-                                    {/each}
-                                </div>
-                            {:else}
-                                <div class="space-y-0.5">
-                                    {#each allPermissions as perm}
+                                    </div>
+                                {/each}
+                            </div>
+                        {:else}
+                            <div class="space-y-0.5">
+                                {#each allPermissions as perm (perm.name)}
                                         <label
                                             class="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-all hover:bg-accent/60"
                                         >
@@ -493,7 +525,10 @@
                         bind:value={editPermName}
                         class="h-8 text-sm flex-1"
                         onkeydown={(e) => {
-                            if (e.key === 'Enter') savePermission();
+                            if (e.key === 'Enter') {
+savePermission();
+}
+
                             if (e.key === 'Escape') {
                                 editingPermission = null;
                                 editPermName = '';
@@ -530,7 +565,9 @@
                         bind:value={newPermissionName}
                         class="h-8 text-sm flex-1"
                         onkeydown={(e) => {
-                            if (e.key === 'Enter') createPermission();
+                            if (e.key === 'Enter') {
+createPermission();
+}
                         }}
                     />
                     <button
@@ -572,7 +609,7 @@
             <ScrollArea class="h-72 rounded-xl border bg-accent/30 p-2">
                 {#if permsLoading}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 p-1">
-                        {#each [1, 2, 3, 4] as _}
+                        {#each [1, 2, 3, 4] as _, i (i)}
                             <div
                                 class="flex items-center gap-2 rounded-lg px-3 py-2.5"
                             >
@@ -586,7 +623,7 @@
                     </div>
                 {:else}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                        {#each allPermissions as perm}
+                        {#each allPermissions as perm (perm.name)}
                             <div
                                 class="group flex items-center gap-2.5 rounded-lg px-3 py-2.5 transition-all hover:bg-accent/60"
                             >
@@ -662,12 +699,14 @@
     <Dialog
         open={deleteConfirmRole !== null}
         onOpenChange={(o) => {
-            if (!o) deleteConfirmRole = null;
+            if (!o) {
+deleteConfirmRole = null;
+}
         }}
     >
         {#if rolesLoading}
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {#each [1, 2, 3] as _}
+                {#each [1, 2, 3] as _, i (i)}
                     <div class="rounded-xl border p-5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
@@ -755,7 +794,7 @@
                                     : 'permisos'}
                             </p>
                             <div class="flex flex-wrap gap-1.5">
-                                {#each role.permissions as perm}
+                                {#each role.permissions as perm (perm)}
                                     <span
                                         class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-secondary-foreground-soft"
                                         >{formatRoleName(perm)}</span
@@ -798,7 +837,9 @@
     <Dialog
         open={deleteConfirmPerm !== null}
         onOpenChange={(o) => {
-            if (!o) deleteConfirmPerm = null;
+            if (!o) {
+deleteConfirmPerm = null;
+}
         }}
     >
         <DialogContent class="sm:max-w-sm">

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import * as Command from "@/components/ui/command/index.js";
-    import { Badge } from "@/components/ui/badge/index.js";
     import { router } from "@inertiajs/svelte";
     import { UtensilsCrossed, Table2, User, Search } from '@lucide/svelte';
+    import { Badge } from "@/components/ui/badge/index.js";
+    import * as Command from "@/components/ui/command/index.js";
     import Button from "./ui/button/button.svelte";
 
     type SearchItem = {
@@ -46,6 +46,7 @@ const icons: Record<string, typeof Search> = {
         if (trimmed.length < 2) {
             results = [];
             loading = false;
+
             return;
         }
 
@@ -71,6 +72,7 @@ const icons: Record<string, typeof Search> = {
 
     function handleOpenChange(value: boolean) {
         open = value;
+
         if (!value) {
             query = "";
             results = [];
@@ -125,11 +127,11 @@ const icons: Record<string, typeof Search> = {
         {:else if !hasResults}
             <Command.Empty>No hay resultados para "{query}"</Command.Empty>
         {:else}
-            {#each results as group, i}
+            {#each results as group, i (group.group)}
                 {#if group.items.length > 0}
                     {#if i > 0}<Command.Separator />{/if}
                     <Command.Group heading={group.group}>
-                        {#each group.items as item}
+                        {#each group.items as item (item.label)}
                             {@const Icon = icons[item.type] ?? Search}
                             <Command.Item
                                 value={item.label}

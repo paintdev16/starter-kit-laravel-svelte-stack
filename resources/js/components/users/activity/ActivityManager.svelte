@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Link } from '@inertiajs/svelte';
-    import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
-    import { onMount } from 'svelte';
     import { ArrowLeft, Globe } from '@lucide/svelte';
-    import CurrentDeviceCard from './CurrentDeviceCard.svelte';
+    import { onMount } from 'svelte';
+    import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
     import ActivityLogItem from './ActivityLogItem.svelte';
     import ActivityPagination from './ActivityPagination.svelte';
+    import CurrentDeviceCard from './CurrentDeviceCard.svelte';
 
     interface LogItem {
         id: number;
@@ -64,12 +64,17 @@
 
     async function fetchLogs(page = 1) {
         logsLoading = true;
+
         try {
             const userParam = filterUserId ? `&user=${filterUserId}` : '';
             const res = await fetch(`/activity/logs?page=${page}${userParam}`, {
                 credentials: 'include',
             });
-            if (!res.ok) throw new Error(`${res.status}`);
+
+            if (!res.ok) {
+throw new Error(`${res.status}`);
+}
+
             logs = await res.json();
         } catch (e) {
             console.error('fetchLogs:', e);
@@ -81,11 +86,16 @@
 
     async function fetchCurrentDevice() {
         deviceLoading = true;
+
         try {
             const res = await fetch('/activity/current-device', {
                 credentials: 'include',
             });
-            if (!res.ok) throw new Error(`${res.status}`);
+
+            if (!res.ok) {
+throw new Error(`${res.status}`);
+}
+
             currentDevice = await res.json();
         } catch {
             currentDevice = null;
@@ -138,7 +148,7 @@
             <div class="rounded-xl border bg-card">
                 {#if logsLoading && !logs}
                     <div class="space-y-3 p-5">
-                        {#each [1, 2, 3, 4] as _}
+                        {#each [1, 2, 3, 4] as _, i (i)}
                             <div class="flex items-center gap-3">
                                 <Skeleton
                                     class="size-10 shrink-0 rounded-full"

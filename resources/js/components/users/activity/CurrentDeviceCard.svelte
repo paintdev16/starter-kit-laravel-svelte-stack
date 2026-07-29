@@ -1,9 +1,9 @@
 <script lang="ts">
-    import * as Card from '@/components/ui/card';
     import { Badge } from '@/components/ui/badge';
+    import * as Card from '@/components/ui/card';
     import { Separator } from '@/components/ui/separator';
-    import * as Tooltip from '@/components/ui/tooltip';
     import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
+    import * as Tooltip from '@/components/ui/tooltip';
     import { getDeviceIcon } from './device-icons';
     import type { DeviceInfo } from './types';
 
@@ -13,7 +13,10 @@
     let Icon = $derived(getDeviceIcon(device?.device_type));
 
     let fields = $derived.by(() => {
-        if (!device) return [];
+        if (!device) {
+return [];
+}
+
         return [
             {
                 label: 'Navegador',
@@ -59,7 +62,7 @@
     <Card.Content class="space-y-0 pb-5">
         {#if loading}
             <div class="space-y-3">
-                {#each Array(5) as _}
+                {#each Array(5) as _, i (i)}
                     <div class="flex items-center justify-between">
                         <Skeleton class="h-3 w-24 rounded-sm" />
                         <Skeleton class="h-3 w-32 rounded-sm" />
@@ -67,7 +70,7 @@
                 {/each}
             </div>
         {:else if device}
-            {#each fields as field, i}
+            {#each fields as field, i (field.label)}
                 <div class="flex items-center justify-between py-2.5">
                     <span class="text-xs text-muted-foreground"
                         >{field.label}</span

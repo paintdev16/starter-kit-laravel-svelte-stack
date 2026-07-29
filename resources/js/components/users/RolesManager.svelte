@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { Pencil, Shield, Trash2 } from '@lucide/svelte';
+    import { Button } from '@/components/ui/button';
+    import { Checkbox } from '@/components/ui/checkbox';
     import {
         Dialog,
         DialogContent,
@@ -11,9 +14,6 @@
     import { Label } from '@/components/ui/label';
     import { ScrollArea } from '@/components/ui/scroll-area';
     import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
-    import { Pencil, Plus, Shield, Trash2 } from '@lucide/svelte';
-    import { Checkbox } from '@/components/ui/checkbox';
-    import { Button } from '@/components/ui/button';
 
     interface RoleItem {
         id: number;
@@ -71,6 +71,7 @@
             admin: 'border-card-info-border bg-card-info/40 hover:border-card-info-border/70 hover:bg-card-info/60',
             user: 'border-card-success-border bg-card-success/40 hover:border-card-success-border/70 hover:bg-card-success/60',
         };
+
         return styles[name] || 'border-card-primary-border bg-card-primary/40 hover:border-card-primary-border/70 hover:bg-card-primary/60';
     }
 
@@ -80,6 +81,7 @@
             admin: 'bg-card-info/80 text-info',
             user: 'bg-card-success/80 text-success',
         };
+
         return styles[name] || 'bg-card-primary/80 text-primary';
     }
 
@@ -93,11 +95,15 @@
 
     async function saveRole() {
         roleNameError = '';
+
         if (!roleName.trim()) {
             roleNameError = 'El nombre del rol es obligatorio';
+
             return;
         }
+
         savingRole = true;
+
         try {
             const url = editingRole ? `/admin/roles/${editingRole.id}` : '/admin/roles';
             const method = editingRole ? 'PUT' : 'POST';
@@ -109,12 +115,15 @@
                 },
                 body: JSON.stringify({ name: roleName.trim(), permissions: selectedPermissions }),
             });
+
             if (!res.ok) {
                 const err = await res.json();
                 const allErrors = err.errors ? Object.values(err.errors).flat() : [];
                 roleNameError = roleName.trim() ? allErrors[0] || 'Error al guardar el rol' : 'El nombre del rol es obligatorio';
+
                 return;
             }
+
             onOpenChange(false);
             await onLoadRoles();
         } catch {
@@ -126,6 +135,7 @@
 
     async function deleteRole(role: RoleItem) {
         deletingRole = true;
+
         try {
             const res = await fetch(`/admin/roles/${role.id}`, {
                 method: 'DELETE',
@@ -133,6 +143,7 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') ?? '',
                 },
             });
+
             if (res.ok) {
                 deleteConfirmRole = null;
                 await onLoadRoles();
@@ -146,7 +157,7 @@
 <div class="mt-4">
     {#if rolesLoading}
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {#each [1, 2, 3] as _}
+            {#each [1, 2, 3] as _, i (i)}
                 <div class="rounded-xl border p-5">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -210,7 +221,7 @@
                     <div class="mt-3.5 space-y-2.5">
                         <p class="text-xs text-muted-foreground">{role.permissions.length} {role.permissions.length === 1 ? 'permiso' : 'permisos'}</p>
                         <div class="flex flex-wrap gap-1.5">
-                            {#each role.permissions as perm}
+                            {#each role.permissions as perm (perm)}
                                 <span class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-secondary-foreground-soft">{formatRoleName(perm)}</span>
                             {/each}
                         </div>
@@ -265,7 +276,7 @@
                     <ScrollArea class="h-64 rounded-xl border bg-accent/30 p-2">
                         {#if rolesLoading || permsLoading}
                             <div class="space-y-1.5 p-1">
-                                {#each [1, 2, 3, 4] as _}
+                                {#each [1, 2, 3, 4] as _, i (i)}
                                     <div class="flex items-center gap-3 px-3 py-2.5">
                                         <Skeleton class="size-4 shrink-0 rounded-[4px]" />
                                         <div class="min-w-0 flex-1 space-y-1.5">
@@ -277,7 +288,7 @@
                             </div>
                         {:else}
                             <div class="space-y-0.5">
-                                {#each allPermissions as perm}
+                                {#each allPermissions as perm (perm.name)}
                                     <label class="group flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-all hover:bg-accent/60">
                                         <Checkbox
                                             checked={selectedPermissions.includes(perm.name)}
@@ -322,7 +333,9 @@
     <Dialog
         open={deleteConfirmRole !== null}
         onOpenChange={(o) => {
-            if (!o) deleteConfirmRole = null;
+            if (!o) {
+deleteConfirmRole = null;
+}
         }}
     >
         <DialogContent class="sm:max-w-sm">

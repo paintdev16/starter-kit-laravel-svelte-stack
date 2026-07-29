@@ -13,38 +13,6 @@
 
 <script lang="ts">
     import { Link, router } from '@inertiajs/svelte';
-    import AppHead from '@/components/AppHead.svelte';
-    import {
-        Avatar,
-        AvatarFallback,
-        AvatarImage,
-    } from '@/components/ui/avatar';
-    import { Button } from '@/components/ui/button';
-    import {
-        Pagination,
-        PaginationContent,
-        PaginationItem,
-        PaginationLink,
-        PaginationPrevious,
-        PaginationNext,
-        PaginationEllipsis,
-    } from '@/components/ui/pagination';
-    import {
-        Dialog,
-        DialogContent,
-        DialogDescription,
-        DialogFooter,
-        DialogHeader,
-        DialogTitle,
-    } from '@/components/ui/dialog';
-    import { Input } from '@/components/ui/input';
-    import { Label } from '@/components/ui/label';
-    import {
-        Tabs,
-        TabsContent,
-        TabsList,
-        TabsTrigger,
-    } from '@/components/ui/tabs';
     import {
         Calendar,
         ClipboardList,
@@ -64,8 +32,40 @@
         Tv,
         UsersIcon,
     } from '@lucide/svelte';
-    import RolesPermisos from '../../components/users/RolePermissions.svelte';
+    import AppHead from '@/components/AppHead.svelte';
+    import {
+        Avatar,
+        AvatarFallback,
+        AvatarImage,
+    } from '@/components/ui/avatar';
+    import { Button } from '@/components/ui/button';
+    import {
+        Dialog,
+        DialogContent,
+        DialogDescription,
+        DialogFooter,
+        DialogHeader,
+        DialogTitle,
+    } from '@/components/ui/dialog';
+    import { Input } from '@/components/ui/input';
+    import { Label } from '@/components/ui/label';
+    import {
+        Pagination,
+        PaginationContent,
+        PaginationItem,
+        PaginationLink,
+        PaginationPrevious,
+        PaginationNext,
+        PaginationEllipsis,
+    } from '@/components/ui/pagination';
     import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
+    import {
+        Tabs,
+        TabsContent,
+        TabsList,
+        TabsTrigger,
+    } from '@/components/ui/tabs';
+    import RolesPermisos from '../../components/users/RolePermissions.svelte';
 
     interface UserItem {
         id: number;
@@ -181,6 +181,7 @@
 
     async function loadRoles() {
         rolesLoading = true;
+
         try {
             const res = await fetch('/admin/roles');
             availableRoles = await res.json();
@@ -205,6 +206,7 @@
             admin: 'border-card-info-border bg-card-info/40 hover:border-card-info-border/70 hover:bg-card-info/60',
             user: 'border-card-success-border bg-card-success/40 hover:border-card-success-border/70 hover:bg-card-success/60',
         };
+
         return (
             styles[name] ||
             'border-card-primary-border bg-card-primary/40 hover:border-card-primary-border/70 hover:bg-card-primary/60'
@@ -218,6 +220,7 @@
             admin: 'border-card-info-border bg-card-info/70 ring-2 ring-info/40',
             user: 'border-card-success-border bg-card-success/70 ring-2 ring-success/40',
         };
+
         return (
             styles[name] ||
             'border-card-primary-border bg-card-primary/70 ring-2 ring-primary/40'
@@ -230,21 +233,32 @@
             admin: 'bg-card-info/80 text-info',
             user: 'bg-card-success/80 text-success',
         };
+
         return styles[name] || 'bg-card-primary/80 text-primary';
     }
 
     function saveUser() {
         userFormErrors = {};
         let fieldErrors: Record<string, string> = {};
-        if (!userFormName.trim()) fieldErrors.name = 'El nombre es obligatorio';
-        if (!userFormEmail.trim())
-            fieldErrors.email = 'El email es obligatorio';
-        if (!editingUser && !userFormPassword.trim())
-            fieldErrors.password = 'La contraseÃ±a es obligatoria';
+
+        if (!userFormName.trim()) {
+fieldErrors.name = 'El nombre es obligatorio';
+}
+
+        if (!userFormEmail.trim()) {
+fieldErrors.email = 'El email es obligatorio';
+}
+
+        if (!editingUser && !userFormPassword.trim()) {
+fieldErrors.password = 'La contraseÃ±a es obligatoria';
+}
+
         if (Object.keys(fieldErrors).length > 0) {
             userFormErrors = fieldErrors;
+
             return;
         }
+
         savingUser = true;
 
         const body = {
@@ -280,7 +294,10 @@
     }
 
     function deleteUser() {
-        if (!deleteConfirmUser) return;
+        if (!deleteConfirmUser) {
+return;
+}
+
         deletingUser = true;
         router.delete(`/users/${deleteConfirmUser.id}`, {
             onSuccess: () => {
@@ -300,11 +317,16 @@
 
     async function fetchCurrentDevice() {
         deviceLoading = true;
+
         try {
             const res = await fetch('/activity/current-device', {
                 credentials: 'include',
             });
-            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+
+            if (!res.ok) {
+throw new Error(`${res.status} ${res.statusText}`);
+}
+
             currentDevice = await res.json();
         } catch (e) {
             console.error('fetchCurrentDevice:', e);
@@ -316,11 +338,16 @@
 
     async function fetchActivityGroups() {
         activityLoading = true;
+
         try {
             const res = await fetch('/activity/grouped', {
                 credentials: 'include',
             });
-            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+
+            if (!res.ok) {
+throw new Error(`${res.status} ${res.statusText}`);
+}
+
             activityGroups = await res.json();
         } catch (e) {
             console.error('fetchActivityGroups:', e);
@@ -507,7 +534,7 @@
                                             Passkey
                                         </span>
                                     {/if}
-                                    {#each user.roles as role}
+                                    {#each user.roles as role (role)}
                                         <span
                                             class="inline-flex items-center rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground-soft"
                                             >{role}</span
@@ -555,11 +582,11 @@
                                         disabled={users.current_page <= 1}
                                     />
                                 </PaginationItem>
-                                {#each users.links as link}
-                                    {#if !/previous|next/i.test(link.label)}
-                                        <PaginationItem>
-                                            {#if link.label === '...'}
-                                                <PaginationEllipsis />
+                                 {#each users.links as link (link.label)}
+                                     {#if !/previous|next/i.test(link.label)}
+                                         <PaginationItem>
+                                             {#if link.label === '...'}
+                                                 <PaginationEllipsis />
                                             {:else if link.url}
                                                 {@const pageNum = Number(
                                                     link.label,
@@ -601,14 +628,14 @@
                         </h3>
                         {#if deviceLoading}
                             <div class="space-y-3">
-                                {#each [1, 2, 3, 4] as _}
+                                {#each [1, 2, 3, 4] as _, i (i)}
                                     <Skeleton class="h-4 w-full rounded-md" />
                                 {/each}
                             </div>
                         {:else if currentDevice}
                             {#each [{ label: 'Navegador', value: currentDevice.browser && currentDevice.browser_version ? `${currentDevice.browser} ${currentDevice.browser_version}` : currentDevice.browser }, { label: 'Sistema operativo', value: currentDevice.os && currentDevice.os_version ? `${currentDevice.os} ${currentDevice.os_version}` : currentDevice.os }, { label: 'Tipo de dispositivo', value: currentDevice.device_type }, { label: 'Marca / Modelo', value: [currentDevice.device_brand, currentDevice.device_model]
                                             .filter(Boolean)
-                                            .join(' ') || '—' }, { label: 'Dirección IP', value: currentDevice.ip_address }] as item}
+                                            .join(' ') || '—' }, { label: 'Dirección IP', value: currentDevice.ip_address }] as item (item.label)}
                                 {#if item.value}
                                     <div
                                         class="flex items-center justify-between py-1.5"
@@ -688,7 +715,7 @@
                             </div>
                             {#if activityLoading && activityGroups.length === 0}
                                 <div class="space-y-3 p-5">
-                                    {#each [1, 2, 3, 4] as _}
+                                    {#each [1, 2, 3, 4] as _, i (i)}
                                         <div class="flex items-center gap-3">
                                             <Skeleton
                                                 class="size-10 shrink-0 rounded-full"
@@ -719,7 +746,7 @@
                                 </div>
                             {:else}
                                 <div class="divide-y">
-                                    {#each activityGroups as group}
+                                    {#each activityGroups as group (group.id || group.group)}
                                         <div
                                             class="flex items-center gap-4 px-5 py-4"
                                         >
@@ -844,6 +871,7 @@
             editingUser = null;
             userFormErrors = {};
         }
+
         userDialogOpen = o;
     }}
 >
@@ -913,7 +941,7 @@
                 <Label>Rol</Label>
                 {#if rolesLoading}
                     <div class="space-y-2">
-                        {#each [1, 2, 3] as _}
+                        {#each [1, 2, 3] as _, i (i)}
                             <Skeleton class="h-14 w-full rounded-xl" />
                         {/each}
                     </div>
@@ -942,7 +970,7 @@
                         </p>
                     {/if}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {#each filteredRoles as role}
+                        {#each filteredRoles as role (role.name)}
                             <button
                                 type="button"
                                 onclick={() => (selectedRole = role.name)}
@@ -1018,7 +1046,9 @@
 <Dialog
     open={deleteConfirmUser !== null}
     onOpenChange={(o) => {
-        if (!o) deleteConfirmUser = null;
+        if (!o) {
+deleteConfirmUser = null;
+}
     }}
 >
     <DialogContent class="sm:max-w-sm">
