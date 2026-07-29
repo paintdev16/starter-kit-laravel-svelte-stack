@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Avatar;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -10,9 +11,9 @@ use Inertia\Inertia;
 
 class AvatarController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $avatars = $request->user()->avatars()->latest()->get()->map(fn ($a) => [
+        $avatars = $request->user()->avatars()->latest()->get()->map(fn (Avatar $a): array => [
             'id' => $a->id,
             'url' => $a->url,
             'created_at' => $a->created_at,

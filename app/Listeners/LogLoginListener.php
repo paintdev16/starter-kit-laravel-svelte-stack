@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Models\ActivityLog;
+use App\Models\User;
 use App\Services\DeviceDetectorService;
 use Illuminate\Auth\Events\Login;
 
@@ -10,16 +11,18 @@ class LogLoginListener
 {
     public function handle(Login $event): void
     {
-        if (! $event->user) {
+        $user = $event->user;
+
+        if (! $user instanceof User) {
             return;
         }
 
         $deviceInfo = DeviceDetectorService::fromRequest(request());
 
         ActivityLog::create([
-            'user_id' => $event->user->id,
+            'user_id' => $user->id,
             'action' => 'auth.login',
-            'description' => "Inicio de sesión: \"{$event->user->name}\"",
+            'description' => "Inicio de sesión: \"{$user->name}\"",
             'user_agent' => $deviceInfo['user_agent'],
             'ip_address' => $deviceInfo['ip_address'],
             'device_type' => $deviceInfo['device_type'],

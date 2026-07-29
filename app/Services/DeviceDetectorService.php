@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class DeviceDetectorService
 {
+    /** @return array<string, mixed> */
     public static function fromRequest(Request $request): array
     {
         $userAgent = $request->userAgent() ?? '';

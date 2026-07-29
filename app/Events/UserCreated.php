@@ -28,6 +28,7 @@ class UserCreated implements ShouldBroadcast
         return 'user.created';
     }
 
+    /** @return array<string, mixed> */
     public function broadcastWith(): array
     {
         return [

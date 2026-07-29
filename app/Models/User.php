@@ -28,14 +28,16 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasRole('root');
     }
 
+    /** @return HasMany<Avatar, $this> */
     public function avatars(): HasMany
     {
         return $this->hasMany(Avatar::class)->latest();
     }
 
+    /** @return ?Avatar */
     public function currentAvatar(): ?Avatar
     {
-        return $this->avatars()->latest()->first();
+        return $this->avatars()->first();
     }
 
     public function currentAvatarUrl(): ?string
