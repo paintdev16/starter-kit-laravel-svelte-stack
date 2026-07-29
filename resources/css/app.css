@@ -1,0 +1,412 @@
+﻿@import "tailwindcss";
+@import "tw-animate-css";
+
+/* =========================
+   SOURCES (Laravel / Blade)
+========================= */
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../resources/js/**/*.svelte';
+
+/* =========================
+   CUSTOM VARIANTS
+========================= */
+@custom-variant dark (&:is(.dark *));
+@custom-variant data-active (&[data-active='true']);
+@custom-variant data-checked (&[data-state='checked']);
+@custom-variant data-indeterminate (&[data-state='indeterminate']);
+
+
+
+/* =========================
+   THEME TOKENS (TAILWIND v4)
+========================= */
+@theme inline {
+
+    /* =========================
+       TYPOGRAPHY
+    ========================= */
+    --font-sans:
+        Instrument Sans, ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    /* =========================
+       RADIUS SYSTEM
+    ========================= */
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-xl: calc(var(--radius) + 4px);
+
+    /* =========================
+       BASE COLORS
+    ========================= */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary-foreground-soft: var(--primary-foreground-soft);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary-foreground-soft: var(--secondary-foreground-soft);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent-foreground-soft: var(--accent-foreground-soft);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-destructive-foreground-soft: var(--destructive-foreground-soft);
+
+    --color-success: var(--success);
+    --color-success-foreground: var(--success-foreground);
+    --color-success-foreground-soft: var(--success-foreground-soft);
+
+    --color-warning: var(--warning);
+    --color-warning-foreground: var(--warning-foreground);
+    --color-warning-foreground-soft: var(--warning-foreground-soft);
+
+    --color-info: var(--info);
+    --color-info-foreground: var(--info-foreground);
+    --color-info-foreground-soft: var(--info-foreground-soft);
+    --color-surface: var(--surface);
+    --color-surface-foreground: var(--surface-foreground);
+
+    --color-focus: var(--focus);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    --color-selection: var(--selection);
+    --color-selection-foreground: var(--selection-foreground);
+
+      --color-card-success: var(--card-success);
+  --color-card-success-border: var(--card-success-border);
+
+  --color-card-info: var(--card-info);
+  --color-card-info-border: var(--card-info-border);
+
+  --color-card-warning: var(--card-warning);
+  --color-card-warning-border: var(--card-warning-border);
+
+  --color-card-destructive: var(--card-destructive);
+  --color-card-destructive-border: var(--card-destructive-border);
+
+  --color-card-primary: var(--card-primary);
+  --color-card-primary-border: var(--card-primary-border);
+}
+
+/* =========================
+   GLOBAL FONT FIX
+========================= */
+@layer utilities {
+    body,
+    html {
+        --font-sans:
+            'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+            'Noto Color Emoji';
+    }
+}
+
+/* ==========================================================
+   LIGHT THEME
+========================================================== */
+:root {
+    /* Base */
+    --background: hsl(220 20% 99%);
+    --foreground: hsl(222 28% 10%);
+
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(222 28% 10%);
+
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222 28% 10%);
+
+    /* Brand - Indigo */
+    --primary: hsl(239 84% 67%);
+    --primary-foreground: hsl(0 0% 100%);
+    --primary-foreground-soft: hsl(239 56% 32%);
+
+    /* Secondary - Slate */
+    --secondary: hsl(215 24% 94%);
+    --secondary-foreground: hsl(220 24% 22%);
+    --secondary-foreground-soft: hsl(220 12% 42%);
+
+    /* Muted - Slate (neutro, más discreto que secondary) */
+    --muted: hsl(220 20% 96%);
+    --muted-foreground: hsl(220 10% 46%);
+
+    /* Accent */
+    --accent: hsl(220 22% 96%);
+    --accent-foreground: hsl(220 26% 18%);
+    --accent-foreground-soft: hsl(220 15% 40%);
+
+    /* Success - Emerald */
+    --success: hsl(151 63% 36%);
+    --success-foreground: hsl(0 0% 100%);
+    --success-foreground-soft: hsl(151 70% 24%);
+
+    /* Warning - Amber */
+    --warning: hsl(38 92% 52%);
+    --warning-foreground: hsl(28 20% 8%);
+    --warning-foreground-soft: hsl(38 82% 28%);
+
+    /* Info - Sky */
+    --info: hsl(201 94% 48%);
+    --info-foreground: hsl(0 0% 100%);
+    --info-foreground-soft: hsl(201 82% 30%);
+
+    /* Error - Rose */
+    --destructive: hsl(350 84% 60%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --destructive-foreground-soft: hsl(350 66% 34%);
+
+    --surface: hsl(220 18% 98%);
+    --surface-foreground: hsl(222 28% 10%);
+
+    --border: hsl(220 15% 90%);
+    --input: hsl(220 15% 90%);
+    --ring: hsl(239 84% 67%);
+    --focus: hsl(239 84% 67%);
+
+    --radius: 0.75rem;
+
+    --chart-1: hsl(239 84% 67%);
+    --chart-2: hsl(151 63% 36%);
+    --chart-3: hsl(201 94% 48%);
+    --chart-4: hsl(38 92% 52%);
+    --chart-5: hsl(350 84% 60%);
+
+    --sidebar: hsl(237, 29%, 85%);
+    --sidebar-foreground: hsl(222 28% 14%);
+
+    --sidebar-primary: hsl(239 84% 67%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+
+    --sidebar-accent: hsl(220 22% 95.5%);
+    --sidebar-accent-foreground: hsl(222 28% 14%);
+
+    --sidebar-border: hsl(220 15% 90%);
+    --sidebar-ring: hsl(239 84% 67%);
+
+    --selection: hsl(239 84% 95%);
+    --selection-foreground: hsl(239 84% 40%);
+        --card-success: hsl(151 70% 45% / 0.08);
+    --card-success-border: hsl(151 60% 45% / 0.22);
+
+    --card-info: hsl(201 95% 50% / 0.08);
+    --card-info-border: hsl(201 85% 50% / 0.22);
+
+    --card-warning: hsl(38 95% 52% / 0.10);
+    --card-warning-border: hsl(38 90% 52% / 0.24);
+
+    --card-destructive: hsl(350 84% 60% / 0.08);
+    --card-destructive-border: hsl(350 84% 60% / 0.22);
+
+    --card-primary: hsl(239 84% 67% / 0.08);
+    --card-primary-border: hsl(239 84% 67% / 0.22);
+}
+
+/* ==========================================================
+   DARK THEME
+========================================================== */
+
+.dark {
+    /* ==========================================================
+       Base
+    ========================================================== */
+    --background: hsl(224 24% 8%);
+    --foreground: hsl(210 20% 98%);
+
+    --card: hsl(223 22% 11%);
+    --card-foreground: hsl(210 20% 98%);
+
+    --popover: hsl(223 22% 11%);
+    --popover-foreground: hsl(210 20% 98%);
+
+    /* ==========================================================
+       Brand
+    ========================================================== */
+
+    --primary: hsl(239 84% 72%);
+    --primary-foreground: hsl(0 0% 100%);
+    --primary-foreground-soft: hsl(239 88% 88%);
+
+    --secondary: hsl(220 15% 17%);
+    --secondary-foreground: hsl(210 20% 98%);
+    --secondary-foreground-soft: hsl(220 12% 74%);
+
+    --muted: hsl(220 15% 15%);
+    --muted-foreground: hsl(220 10% 65%);
+
+    --accent: hsl(220 15% 17%);
+    --accent-foreground: hsl(210 20% 98%);
+    --accent-foreground-soft: hsl(220 12% 80%);
+
+    /* ==========================================================
+       Semantic Colors
+    ========================================================== */
+
+    --success: hsl(151 58% 44%);
+    --success-foreground: hsl(0 0% 100%);
+    --success-foreground-soft: hsl(151 58% 86%);
+
+    --warning: hsl(40 96% 60%);
+    --warning-foreground: hsl(28 20% 8%);
+    --warning-foreground-soft: hsl(40 86% 84%);
+
+    --info: hsl(201 94% 60%);
+    --info-foreground: hsl(0 0% 100%);
+    --info-foreground-soft: hsl(201 88% 86%);
+
+    --destructive: hsl(350 84% 67%);
+    --destructive-foreground: hsl(0 0% 100%);
+    --destructive-foreground-soft: hsl(350 82% 87%);
+
+    /* ==========================================================
+       Surface
+    ========================================================== */
+
+    --surface: hsl(223 20% 13%);
+    --surface-foreground: hsl(210 20% 98%);
+
+    --border: hsl(220 14% 18%);
+    --input: hsl(220 14% 18%);
+    --ring: hsl(239 84% 72%);
+    --focus: hsl(239 84% 72%);
+
+    /* ==========================================================
+       Charts
+    ========================================================== */
+
+    --chart-1: hsl(239 84% 72%);
+    --chart-2: hsl(151 58% 44%);
+    --chart-3: hsl(201 94% 60%);
+    --chart-4: hsl(40 96% 60%);
+    --chart-5: hsl(350 88% 67%);
+
+    /* ==========================================================
+       Sidebar
+    ========================================================== */
+
+    --sidebar: hsl(223 22% 10%);
+    --sidebar-foreground: hsl(210 20% 98%);
+
+    --sidebar-primary: hsl(239 84% 72%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+
+    --sidebar-accent: hsl(220 15% 17%);
+    --sidebar-accent-foreground: hsl(210 20% 98%);
+
+    --sidebar-border: hsl(220 14% 18%);
+    --sidebar-ring: hsl(239 84% 72%);
+
+    /* ==========================================================
+       Selection
+    ========================================================== */
+
+    --selection: hsl(239 28% 20%);
+    --selection-foreground: hsl(240 14% 89%);
+
+    /* ==========================================================
+       Dashboard Cards
+       (Fondos oscuros con un matiz del color)
+    ========================================================== */
+
+    --card-success: hsl(151 58% 44% / 0.12);
+    --card-success-border: hsl(151 58% 44% / 0.28);
+
+    --card-info: hsl(201 94% 60% / 0.12);
+    --card-info-border: hsl(201 94% 60% / 0.28);
+
+    --card-warning: hsl(40 96% 60% / 0.14);
+    --card-warning-border: hsl(40 96% 60% / 0.30);
+
+    --card-destructive: hsl(350 84% 67% / 0.12);
+    --card-destructive-border: hsl(350 84% 67% / 0.28);
+
+    --card-primary: hsl(239 84% 72% / 0.12);
+    --card-primary-border: hsl(239 84% 72% / 0.28);
+}
+/* =========================
+   BASE LAYER
+========================= */
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    input,
+    button,
+    textarea,
+    select {
+        font: inherit;
+    }
+}
+
+/* =========================
+   COMPONENTS
+========================= */
+@layer components {
+
+    .app-sidebar-icon {
+        @apply flex size-8 aspect-square items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground;
+    }
+
+    .app-sidebar-user-avatar {
+        @apply flex size-8 aspect-square items-center justify-center rounded-lg bg-sidebar-accent text-xs font-semibold text-sidebar-accent-foreground ring-1 ring-sidebar-border;
+    }
+
+    .app-sidebar-dropdown {
+        @apply border-sidebar-border bg-sidebar text-sidebar-foreground ring-sidebar-ring/20;
+    }
+
+    .app-sidebar-dropdown-icon {
+        @apply flex size-6 items-center justify-center rounded-md border border-sidebar-border bg-sidebar-accent text-sidebar-accent-foreground;
+    }
+}
+
+.row-flash {
+    animation: row-flash 2s ease-out;
+}
+
+@keyframes row-flash {
+    0% {
+        background-color: var(--color-primary-container, oklch(0.9 0.05 260));
+        box-shadow: inset 0 0 0 1px var(--color-primary);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: inset 0 0 0 1px transparent;
+    }
+}
