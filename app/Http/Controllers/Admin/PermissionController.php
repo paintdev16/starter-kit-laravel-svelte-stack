@@ -47,7 +47,7 @@ class PermissionController extends Controller
     public function update(Request $request, Permission $permission): JsonResponse
     {
         $data = $request->validate([
-            'name' => 'required|string|unique:permissions,name,' . $permission->id,
+            'name' => 'required|string|unique:permissions,name,'.$permission->id,
         ]);
 
         $permission->update(['name' => $data['name']]);

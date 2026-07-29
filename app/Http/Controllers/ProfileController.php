@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
-use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
 
 class ProfileController extends Controller
 {

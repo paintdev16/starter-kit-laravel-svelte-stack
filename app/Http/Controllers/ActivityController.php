@@ -16,7 +16,7 @@ class ActivityController extends Controller
     {
         $user = $request->user();
 
-        if (!$user || !($user->hasRole('root') || $user->hasRole('super-admin'))) {
+        if (! $user || ! ($user->hasRole('root') || $user->hasRole('super-admin'))) {
             return response()->json(['data' => [], 'message' => 'No autorizado'], 403);
         }
 
@@ -44,7 +44,7 @@ class ActivityController extends Controller
     {
         $user = $request->user();
 
-        if (!$user || !($user->hasRole('root') || $user->hasRole('super-admin'))) {
+        if (! $user || ! ($user->hasRole('root') || $user->hasRole('super-admin'))) {
             abort(403);
         }
 
@@ -66,7 +66,7 @@ class ActivityController extends Controller
     {
         $user = $request->user();
 
-        if (!$user || !($user->hasRole('root') || $user->hasRole('super-admin'))) {
+        if (! $user || ! ($user->hasRole('root') || $user->hasRole('super-admin'))) {
             return response()->json(['data' => [], 'message' => 'No autorizado'], 403);
         }
 
@@ -75,10 +75,11 @@ class ActivityController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(50)
             ->get()
-            ->groupBy(fn($log) => $log->user_id . '_' . ($log->user->name ?? 'Desconocido'))
-            ->map(function($items, $key) {
+            ->groupBy(fn ($log) => $log->user_id.'_'.($log->user->name ?? 'Desconocido'))
+            ->map(function ($items, $key) {
                 $first = $items->first();
                 $lastLogin = $items->firstWhere('action', 'auth.login')?->created_at;
+
                 return [
                     'user_id' => $first->user_id,
                     'user_name' => $first->user->name ?? 'Desconocido',
@@ -93,7 +94,7 @@ class ActivityController extends Controller
 
         $userIds = $logs->pluck('user_id')->filter()->unique()->values()->toArray();
         $onlineUsers = [];
-        if (!empty($userIds)) {
+        if (! empty($userIds)) {
             $fiveMinutesAgo = time() - 300;
             $onlineUsers = DB::table('sessions')
                 ->whereIn('user_id', $userIds)
@@ -103,7 +104,7 @@ class ActivityController extends Controller
         }
         $onlineUsers = array_flip($onlineUsers);
 
-        $logs = $logs->map(function($group) use ($onlineUsers) {
+        $logs = $logs->map(function ($group) use ($onlineUsers) {
             return array_merge($group, [
                 'is_online' => isset($onlineUsers[$group['user_id']]),
             ]);

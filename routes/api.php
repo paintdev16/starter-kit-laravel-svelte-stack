@@ -6,14 +6,14 @@ use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\AvatarController;
 use App\Http\Controllers\Api\GlobalSearchController;
 use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\Settings\SecurityController;
 use App\Http\Controllers\Api\Settings\ProfileController as SettingsProfileController;
+use App\Http\Controllers\Api\Settings\SecurityController;
 use App\Http\Controllers\Api\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', fn(Request $request) => $request->user());
+    Route::get('/user', fn (Request $request) => $request->user());
 
     Route::get('users', [UsersController::class, 'index']);
     Route::post('users', [UsersController::class, 'store']);

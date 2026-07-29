@@ -12,7 +12,7 @@ class AvatarController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $avatars = $request->user()->avatars()->latest()->get()->map(fn($a) => [
+        $avatars = $request->user()->avatars()->latest()->get()->map(fn ($a) => [
             'id' => $a->id,
             'url' => $a->url,
             'created_at' => $a->created_at,

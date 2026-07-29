@@ -16,10 +16,10 @@ class UsersController extends Controller
     {
         $users = User::query()
             ->where('id', '!=', $request->user()->id)
-            ->whereDoesntHave('roles', fn($q) => $q->where('name', 'root'))
+            ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'root'))
             ->orderBy('created_at', 'desc')
             ->paginate(12)
-            ->through(fn($user) => [
+            ->through(fn ($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -64,7 +64,7 @@ class UsersController extends Controller
             'role' => 'nullable|string|exists:roles,name',
         ]);
 
-        if (!empty($data['role']) && $data['role'] === 'root' && User::role('root')->exists()) {
+        if (! empty($data['role']) && $data['role'] === 'root' && User::role('root')->exists()) {
             return response()->json(['message' => 'Ya existe un usuario root.'], 422);
         }
 
@@ -74,7 +74,7 @@ class UsersController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        if (!empty($data['role'])) {
+        if (! empty($data['role'])) {
             $user->syncRoles($data['role']);
         }
 
@@ -105,7 +105,7 @@ class UsersController extends Controller
             'email' => $data['email'],
         ];
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $updateData['password'] = Hash::make($data['password']);
         }
 

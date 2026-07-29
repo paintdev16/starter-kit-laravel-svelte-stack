@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,9 +52,10 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($user->isRoot()) {
-            $rootCount = \App\Models\User::role('root')->count();
+            $rootCount = User::role('root')->count();
             if ($rootCount <= 1) {
                 Inertia::flash('toast', ['type' => 'error', 'message' => 'No puedes eliminar la cuenta del único usuario root.']);
+
                 return to_route('profile.show');
             }
         }

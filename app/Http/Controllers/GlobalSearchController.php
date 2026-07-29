@@ -23,7 +23,7 @@ class GlobalSearchController extends Controller
             })
             ->limit(5)
             ->get()
-            ->map(fn($user) => [
+            ->map(fn ($user) => [
                 'type' => 'user',
                 'label' => $user->name,
                 'description' => $user->email,
@@ -35,7 +35,7 @@ class GlobalSearchController extends Controller
             [
                 'group' => 'Usuarios',
                 'items' => $users,
-            ]
+            ],
         ]);
     }
 }

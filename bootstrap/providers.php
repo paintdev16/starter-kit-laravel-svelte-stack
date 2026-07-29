@@ -1,8 +1,13 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\BroadcastServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\FortifyServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\BroadcastServiceProvider::class,
-    App\Providers\EventServiceProvider::class,
-    App\Providers\FortifyServiceProvider::class,
+    AppServiceProvider::class,
+    BroadcastServiceProvider::class,
+    EventServiceProvider::class,
+    FortifyServiceProvider::class,
 ];

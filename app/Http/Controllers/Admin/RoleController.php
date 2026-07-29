@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\ActivityLoggerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -34,7 +33,7 @@ class RoleController extends Controller
 
         $role = Role::create(['name' => $data['name'], 'guard_name' => 'web']);
 
-        if (!empty($data['permissions'])) {
+        if (! empty($data['permissions'])) {
             $role->syncPermissions($data['permissions']);
         }
 
@@ -46,7 +45,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role): JsonResponse
     {
         $data = $request->validate([
-            'name' => 'required|string|unique:roles,name,' . $role->id,
+            'name' => 'required|string|unique:roles,name,'.$role->id,
             'permissions' => 'nullable|array',
             'permissions.*' => 'string|exists:permissions,name',
         ]);

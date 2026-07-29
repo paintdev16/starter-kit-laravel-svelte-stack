@@ -10,7 +10,7 @@ class LogLoginListener
 {
     public function handle(Login $event): void
     {
-        if (!$event->user) {
+        if (! $event->user) {
             return;
         }
 

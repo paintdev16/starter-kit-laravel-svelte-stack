@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Services\ActivityLoggerService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class SecurityController extends Controller
 {
