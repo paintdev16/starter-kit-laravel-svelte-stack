@@ -34,7 +34,6 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasMany(Avatar::class)->latest();
     }
 
-    /** @return ?Avatar */
     public function currentAvatar(): ?Avatar
     {
         return $this->avatars()->first();
