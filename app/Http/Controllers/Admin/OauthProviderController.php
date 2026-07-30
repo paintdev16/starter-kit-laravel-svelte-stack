@@ -54,7 +54,7 @@ class OauthProviderController extends Controller
     public function update(Request $request, OauthProvider $oauthProvider): JsonResponse
     {
         $data = $request->validate([
-            'provider' => 'required|string|max:100|unique:oauth_providers,provider,' . $oauthProvider->id,
+            'provider' => 'required|string|max:100|unique:oauth_providers,provider,'.$oauthProvider->id,
             'client_id' => 'required|string',
             'client_secret' => 'nullable|string',
             'redirect_uri' => 'required|url',

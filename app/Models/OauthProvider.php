@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class OauthProvider extends Model
@@ -28,8 +29,8 @@ class OauthProvider extends Model
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Builder<self> $query
-     * @return \Illuminate\Database\Eloquent\Builder<self>
+     * @param  Builder<self>  $query
+     * @return Builder<self>
      */
     public function scopeEnabled($query)
     {

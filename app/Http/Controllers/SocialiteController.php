@@ -28,7 +28,7 @@ class SocialiteController extends Controller
         return OauthProvider::query()
             ->where('provider', $provider)
             ->where('enabled', true)
-            ->firstOr(fn() => abort(404, 'Proveedor no encontrado o deshabilitado.'));
+            ->firstOr(fn () => abort(404, 'Proveedor no encontrado o deshabilitado.'));
     }
 
     private function configureSocialite(string $provider, OauthProvider $oauth): void
