@@ -675,7 +675,10 @@
         </TabsContent>
 
         <TabsContent value="verification">
-            <Verification active={tab === 'verification'} canManageVerification={canManageVerification} />
+            <Verification
+                active={tab === 'verification'}
+                {canManageVerification}
+            />
         </TabsContent>
 
         {#if canManageSocialite}
@@ -1003,9 +1006,17 @@
                 {/if}
             </div>
             {#if editingUser && canCreateUser}
-                <div class="flex items-center gap-3 rounded-lg border bg-accent/30 p-3">
-                    <Checkbox id="user-verified" bind:checked={userFormVerified} />
-                    <Label for="user-verified" class="cursor-pointer text-sm font-medium">
+                <div
+                    class="flex items-center gap-3 rounded-lg border bg-accent/30 p-3"
+                >
+                    <Checkbox
+                        id="user-verified"
+                        bind:checked={userFormVerified}
+                    />
+                    <Label
+                        for="user-verified"
+                        class="cursor-pointer text-sm font-medium"
+                    >
                         Email verificado
                     </Label>
                 </div>

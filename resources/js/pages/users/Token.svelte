@@ -44,7 +44,10 @@
         guard_name: string;
     }
 
-    let { active = false, canManageTokens = false }: { active?: boolean; canManageTokens?: boolean } = $props();
+    let {
+        active = false,
+        canManageTokens = false,
+    }: { active?: boolean; canManageTokens?: boolean } = $props();
 
     let tokens = $state<TokenItem[]>([]);
     let allPermissions = $state<PermissionItem[]>([]);
@@ -67,8 +70,8 @@
 
     function formatDate(dateStr: string | null): string {
         if (!dateStr) {
-return 'Nunca';
-}
+            return 'Nunca';
+        }
 
         return new Date(dateStr).toLocaleDateString('es-ES', {
             year: 'numeric',
@@ -81,8 +84,8 @@ return 'Nunca';
 
     function formatAbilityName(name: string): string {
         if (name === '*') {
-return 'Acceso total';
-}
+            return 'Acceso total';
+        }
 
         return name
             .split(/[-_]/)
@@ -164,7 +167,10 @@ return 'Acceso total';
 
             if (!res.ok) {
                 const err = await res.json();
-                createError = err.errors?.name?.[0] || err.message || 'Error al crear token';
+                createError =
+                    err.errors?.name?.[0] ||
+                    err.message ||
+                    'Error al crear token';
 
                 return;
             }
@@ -181,8 +187,8 @@ return 'Acceso total';
 
     async function copyToken() {
         if (!newTokenPlainText) {
-return;
-}
+            return;
+        }
 
         try {
             await navigator.clipboard.writeText(newTokenPlainText);
@@ -195,8 +201,8 @@ return;
 
     async function deleteToken() {
         if (!deleteConfirmToken) {
-return;
-}
+            return;
+        }
 
         deleting = true;
 
@@ -230,14 +236,10 @@ return;
     >
         <Shield class="size-12 text-muted-foreground/30" />
         <div class="text-center">
-            <p
-                class="text-base font-medium text-muted-foreground"
-            >
+            <p class="text-base font-medium text-muted-foreground">
                 Acceso restringido
             </p>
-            <p
-                class="mt-1 text-sm text-muted-foreground/60"
-            >
+            <p class="mt-1 text-sm text-muted-foreground/60">
                 Solo los usuarios con rol <strong>root</strong>
                 o <strong>super-admin</strong> pueden gestionar tokens de API.
             </p>
@@ -305,7 +307,9 @@ return;
                                 <div
                                     class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent"
                                 >
-                                    <KeyRound class="size-4.5 text-accent-foreground" />
+                                    <KeyRound
+                                        class="size-4.5 text-accent-foreground"
+                                    />
                                 </div>
                                 <h3
                                     class="truncate text-sm font-semibold text-foreground"
@@ -336,9 +340,7 @@ return;
                                     </span>
                                 {/each}
                             </div>
-                            <p
-                                class="text-[10px] text-muted-foreground/60"
-                            >
+                            <p class="text-[10px] text-muted-foreground/60">
                                 Creado {formatDate(token.created_at)}
                             </p>
                         </div>
@@ -374,8 +376,8 @@ return;
                     class={tokenNameError ? 'border-destructive' : ''}
                     onkeydown={(e) => {
                         if (e.key === 'Enter' && !creating) {
-createToken();
-}
+                            createToken();
+                        }
                     }}
                 />
                 {#if tokenNameError}
@@ -393,9 +395,7 @@ createToken();
                     Selecciona los permisos mínimos que necesitará esta
                     integración.
                 </p>
-                <ScrollArea
-                    class="h-64 rounded-xl border bg-accent/30 p-2"
-                >
+                <ScrollArea class="h-64 rounded-xl border bg-accent/30 p-2">
                     {#if allPermissions.length === 0}
                         <p
                             class="py-8 text-center text-sm text-muted-foreground"
@@ -418,9 +418,7 @@ createToken();
                                         class="shrink-0"
                                     />
                                     <div class="min-w-0 flex-1">
-                                        <p
-                                            class="truncate text-sm font-medium"
-                                        >
+                                        <p class="truncate text-sm font-medium">
                                             {formatAbilityName(perm.name)}
                                         </p>
                                         <p
@@ -470,9 +468,7 @@ createToken();
             </DialogDescription>
         </DialogHeader>
         <div class="space-y-4 py-2">
-            <div
-                class="rounded-lg border bg-accent/30 p-4"
-            >
+            <div class="rounded-lg border bg-accent/30 p-4">
                 <div class="flex items-center justify-between gap-2">
                     <p
                         class="truncate text-sm font-mono font-medium text-foreground"
@@ -489,11 +485,9 @@ createToken();
                                         class="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent"
                                         onclick={() =>
                                             (tokenRevealed = !tokenRevealed)}
-                                        aria-label={
-                                            tokenRevealed
-                                                ? 'Ocultar token'
-                                                : 'Mostrar token'
-                                        }
+                                        aria-label={tokenRevealed
+                                            ? 'Ocultar token'
+                                            : 'Mostrar token'}
                                     >
                                         {#if tokenRevealed}
                                             <EyeOff class="size-3.5" />
@@ -503,9 +497,7 @@ createToken();
                                     </button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    {tokenRevealed
-                                        ? 'Ocultar'
-                                        : 'Mostrar'}
+                                    {tokenRevealed ? 'Ocultar' : 'Mostrar'}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -518,7 +510,9 @@ createToken();
                                         aria-label="Copiar token"
                                     >
                                         {#if tokenCopied}
-                                            <Check class="size-3.5 text-success" />
+                                            <Check
+                                                class="size-3.5 text-success"
+                                            />
                                         {:else}
                                             <Copy class="size-3.5" />
                                         {/if}
@@ -555,8 +549,8 @@ createToken();
     open={deleteConfirmToken !== null}
     onOpenChange={(o) => {
         if (!o) {
-deleteConfirmToken = null;
-}
+            deleteConfirmToken = null;
+        }
     }}
 >
     <DialogContent class="sm:max-w-sm">

@@ -13,7 +13,10 @@
         created_at: string;
     }
 
-    let { active = false, canManageVerification = false }: { active?: boolean; canManageVerification?: boolean } = $props();
+    let {
+        active = false,
+        canManageVerification = false,
+    }: { active?: boolean; canManageVerification?: boolean } = $props();
 
     let users = $state<UserItem[]>([]);
     let loading = $state(false);
@@ -52,7 +55,13 @@
             if (res.ok) {
                 const data = await res.json();
                 users = users.map((u) =>
-                    u.id === user.id ? { ...u, verified: data.verified, email_verified_at: data.email_verified_at } : u,
+                    u.id === user.id
+                        ? {
+                              ...u,
+                              verified: data.verified,
+                              email_verified_at: data.email_verified_at,
+                          }
+                        : u,
                 );
             }
         } catch {
@@ -64,8 +73,8 @@
 
     function formatDate(dateStr: string | null): string {
         if (!dateStr) {
-return '—';
-}
+            return '—';
+        }
 
         return new Date(dateStr).toLocaleDateString('es-ES', {
             year: 'numeric',
@@ -95,8 +104,8 @@ return '—';
             </p>
             <p class="mt-1 text-sm text-muted-foreground/60">
                 Solo los usuarios con rol <strong>root</strong>
-                o <strong>super-admin</strong> pueden
-                gestionar la verificación de correos.
+                o <strong>super-admin</strong> pueden gestionar la verificación de
+                correos.
             </p>
         </div>
     </div>
@@ -108,7 +117,9 @@ return '—';
     </div>
 {:else if users.length === 0}
     <div class="flex flex-col items-center justify-center gap-4 py-20">
-        <div class="flex size-16 items-center justify-center rounded-2xl bg-secondary">
+        <div
+            class="flex size-16 items-center justify-center rounded-2xl bg-secondary"
+        >
             <ShieldCheck class="size-8 text-secondary-foreground-soft" />
         </div>
         <div class="text-center">
@@ -121,7 +132,9 @@ return '—';
     <div class="overflow-hidden rounded-xl border">
         <table class="w-full">
             <thead>
-                <tr class="border-b bg-accent/30 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <tr
+                    class="border-b bg-accent/30 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground"
+                >
                     <th class="px-4 py-3">Usuario</th>
                     <th class="px-4 py-3">Email</th>
                     <th class="px-4 py-3">Roles</th>
@@ -133,7 +146,9 @@ return '—';
             <tbody class="divide-y">
                 {#each users as user (user.id)}
                     <tr class="transition-colors hover:bg-accent/20">
-                        <td class="px-4 py-3 text-sm font-medium text-foreground">
+                        <td
+                            class="px-4 py-3 text-sm font-medium text-foreground"
+                        >
                             {user.name}
                         </td>
                         <td class="px-4 py-3 text-sm text-muted-foreground">
@@ -142,7 +157,9 @@ return '—';
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-1">
                                 {#each user.roles as role (role)}
-                                    <span class="inline-flex items-center rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground-soft">
+                                    <span
+                                        class="inline-flex items-center rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-secondary-foreground-soft"
+                                    >
                                         {role}
                                     </span>
                                 {/each}
@@ -150,12 +167,16 @@ return '—';
                         </td>
                         <td class="px-4 py-3">
                             {#if user.verified}
-                                <span class="inline-flex items-center gap-1 rounded-md border border-success/30 bg-card-success px-1.5 py-0.5 text-[10px] font-medium text-success-foreground-soft">
+                                <span
+                                    class="inline-flex items-center gap-1 rounded-md border border-success/30 bg-card-success px-1.5 py-0.5 text-[10px] font-medium text-success-foreground-soft"
+                                >
                                     <ShieldCheck class="size-3" />
                                     Verificado
                                 </span>
                             {:else}
-                                <span class="inline-flex items-center gap-1 rounded-md border border-warning/30 bg-card-warning px-1.5 py-0.5 text-[10px] font-medium text-warning-foreground-soft">
+                                <span
+                                    class="inline-flex items-center gap-1 rounded-md border border-warning/30 bg-card-warning px-1.5 py-0.5 text-[10px] font-medium text-warning-foreground-soft"
+                                >
                                     <ShieldX class="size-3" />
                                     Pendiente
                                 </span>
@@ -169,7 +190,8 @@ return '—';
                                 size="sm"
                                 variant={user.verified ? 'outline' : 'default'}
                                 onclick={() => toggle(user)}
-                                disabled={toggling === user.id || user.roles.includes('super-admin')}
+                                disabled={toggling === user.id ||
+                                    user.roles.includes('super-admin')}
                             >
                                 {toggling === user.id
                                     ? 'Cambiando...'
