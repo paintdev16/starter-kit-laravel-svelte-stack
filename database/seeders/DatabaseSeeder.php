@@ -13,15 +13,25 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        $this->call(RolePermissionSeeder::class);
+        $this->call([
+            RolePermissionSeeder::class,
+            OauthProviderSeeder::class,
+        ]);
 
-        $user = User::factory()->create([
+        $root = User::factory()->create([
             'name' => 'paint',
             'email' => 'paint@gmail.com',
             'password' => Hash::make('123456789'),
-
         ]);
 
-        $user->assignRole('root');
+        $root->assignRole('root');
+
+        $admin = User::factory()->create([
+            'name' => 'Kelly',
+            'email' => 'kelly@gmail.com',
+            'password' => Hash::make('123456789'),
+        ]);
+
+        $admin->assignRole('admin');
     }
 }

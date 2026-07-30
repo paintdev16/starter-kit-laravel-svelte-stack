@@ -4,10 +4,14 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
+
+Route::get('auth/{provider}/redirect', [SocialiteController::class, 'redirect'])->name('socialite.redirect');
+Route::get('auth/{provider}/callback', [SocialiteController::class, 'callback'])->name('socialite.callback');
 
 Route::middleware(['auth', 'verified', 'inactivity:30'])->group(function () {
     Route::get(

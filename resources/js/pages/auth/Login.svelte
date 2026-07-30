@@ -24,10 +24,30 @@
     let {
         status = '',
         canResetPassword,
+        enabledProviders = [],
     }: {
         status?: string;
         canResetPassword: boolean;
+        enabledProviders?: string[];
     } = $props();
+
+    function providerLabel(name: string): string {
+        const labels: Record<string, string> = {
+            google: 'Google',
+            github: 'GitHub',
+            microsoft: 'Microsoft',
+            facebook: 'Facebook',
+            twitter: 'Twitter',
+            linkedin: 'LinkedIn',
+            apple: 'Apple',
+            discord: 'Discord',
+            gitlab: 'GitLab',
+            bitbucket: 'Bitbucket',
+            slack: 'Slack',
+        };
+
+        return labels[name] ?? name.charAt(0).toUpperCase() + name.slice(1);
+    }
 </script>
 
 <AppHead title="Iniciar sesión" />
@@ -96,6 +116,30 @@
                 Iniciar sesión
             </Button>
         </div>
+
+        {#if enabledProviders.length > 0}
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <span class="w-full border-t"></span>
+                </div>
+                <div class="relative flex justify-center text-xs uppercase">
+                    <span class="bg-card px-2 text-muted-foreground">
+                        O continúa con
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                {#each enabledProviders as provider (provider)}
+                    <a
+                        href="/auth/{provider}/redirect"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                    >
+                        {providerLabel(provider)}
+                    </a>
+                {/each}
+            </div>
+        {/if}
 
         <div class="text-center text-sm text-muted-foreground">
             ¿No tienes una cuenta?

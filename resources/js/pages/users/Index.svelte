@@ -17,6 +17,7 @@
         Calendar,
         ClipboardList,
         Eye,
+        Globe,
         KeyRound,
         Laptop,
         Mail,
@@ -39,6 +40,7 @@
         AvatarImage,
     } from '@/components/ui/avatar';
     import { Button } from '@/components/ui/button';
+    import { Checkbox } from '@/components/ui/checkbox';
     import {
         Dialog,
         DialogContent,
@@ -66,6 +68,9 @@
         TabsTrigger,
     } from '@/components/ui/tabs';
     import RolesPermisos from '../../components/users/RolePermissions.svelte';
+    import Settings from './Settings.svelte';
+    import Token from './Token.svelte';
+    import Verification from './Verification.svelte';
 
     interface UserItem {
         id: number;
@@ -112,10 +117,18 @@
         },
         rootCount = 0,
         canViewActivity = false,
+        canManageTokens = false,
+        canCreateUser = false,
+        canManageVerification = false,
+        canManageSocialite = false,
     }: {
         users?: PaginatedData<UserItem>;
         rootCount?: number;
         canViewActivity?: boolean;
+        canManageTokens?: boolean;
+        canCreateUser?: boolean;
+        canManageVerification?: boolean;
+        canManageSocialite?: boolean;
     } = $props();
 
     let tab = $state('users');
@@ -135,6 +148,7 @@
     let userFormPassword = $state('');
     let selectedRole = $state('');
     let userFormErrors = $state<Record<string, string>>({});
+    let userFormVerified = $state(false);
     let savingUser = $state(false);
     let availableRoles = $state<RoleItem[]>([]);
     let rolesLoading = $state(false);
@@ -163,6 +177,7 @@
         userFormEmail = user.email;
         userFormPassword = '';
         selectedRole = user.roles[0] ?? '';
+        userFormVerified = user.email_verified_at !== null;
         userFormErrors = {};
         loadRoles();
         userDialogOpen = true;
@@ -250,7 +265,7 @@
         }
 
         if (!editingUser && !userFormPassword.trim()) {
-            fieldErrors.password = 'La contraseÃ±a es obligatoria';
+            fieldErrors.password = 'La contraseña es obligatoria';
         }
 
         if (Object.keys(fieldErrors).length > 0) {
@@ -261,7 +276,7 @@
 
         savingUser = true;
 
-        const body = {
+        const body: Record<string, any> = {
             name: userFormName.trim(),
             email: userFormEmail.trim(),
             role: selectedRole || undefined,
@@ -269,6 +284,8 @@
         };
 
         if (editingUser) {
+            body.verified = userFormVerified;
+
             router.put(`/users/${editingUser.id}`, body, {
                 onSuccess: () => {
                     userDialogOpen = false;
@@ -311,9 +328,9 @@
     }
 
     let currentDevice = $state<any>(null);
-    let deviceLoading = $state(true);
+    let deviceLoading = $state(false);
     let activityGroups = $state<any[]>([]);
-    let activityLoading = $state(true);
+    let activityLoading = $state(false);
 
     async function fetchCurrentDevice() {
         deviceLoading = true;
@@ -369,8 +386,13 @@
 
     $effect(() => {
         if (tab === 'activity') {
-            fetchCurrentDevice();
-            fetchActivityGroups();
+            if (currentDevice === null && !deviceLoading) {
+                fetchCurrentDevice();
+            }
+
+            if (activityGroups.length === 0 && !activityLoading) {
+                fetchActivityGroups();
+            }
         }
     });
 </script>
@@ -389,7 +411,13 @@
                     ? 'Usuarios'
                     : tab === 'roles'
                       ? 'Roles y permisos'
-                      : 'Actividad'}
+                      : tab === 'token'
+                        ? 'Tokens de API'
+                        : tab === 'verification'
+                          ? 'Verificación'
+                          : tab === 'settings'
+                            ? 'Configuración'
+                            : 'Actividad'}
             </h1>
             <p class="mt-1 text-sm text-muted-foreground">
                 {#if tab === 'users'}
@@ -399,12 +427,18 @@
                         : 'usuarios registrados'} en el sistema
                 {:else if tab === 'roles'}
                     Administra los roles y permisos del sistema
+                {:else if tab === 'token'}
+                    Gestiona tokens para integraciones con terceros
+                {:else if tab === 'verification'}
+                    Gestiona la verificación de correos electrónicos
+                {:else if tab === 'settings'}
+                    Configura las opciones generales del sistema
                 {:else}
                     Historial de actividad de los usuarios
                 {/if}
             </p>
         </div>
-        {#if tab === 'users'}
+        {#if tab === 'users' && canCreateUser}
             <div class="flex items-center gap-2">
                 <Button size="sm" onclick={openCreateUser}>
                     <Plus class="mr-1.5 size-4" />
@@ -428,6 +462,20 @@
                 <ClipboardList class="size-4" />
                 Actividad
             </TabsTrigger>
+            <TabsTrigger value="token" class="gap-2">
+                <KeyRound class="size-4" />
+                Token
+            </TabsTrigger>
+            <TabsTrigger value="verification" class="gap-2">
+                <ShieldCheck class="size-4" />
+                Verificación
+            </TabsTrigger>
+            {#if canManageSocialite}
+                <TabsTrigger value="settings" class="gap-2">
+                    <Globe class="size-4" />
+                    Configuración
+                </TabsTrigger>
+            {/if}
         </TabsList>
 
         <TabsContent value="users">
@@ -483,7 +531,7 @@
                                         {user.email}
                                     </p>
                                 </div>
-                                {#if !user.roles.includes('root')}
+                                {#if canCreateUser && !user.roles.includes('root')}
                                     <div
                                         class="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
                                     >
@@ -622,6 +670,20 @@
             <RolesPermisos active={tab === 'roles'} />
         </TabsContent>
 
+        <TabsContent value="token">
+            <Token active={tab === 'token'} {canManageTokens} />
+        </TabsContent>
+
+        <TabsContent value="verification">
+            <Verification active={tab === 'verification'} canManageVerification={canManageVerification} />
+        </TabsContent>
+
+        {#if canManageSocialite}
+            <TabsContent value="settings">
+                <Settings active={tab === 'settings'} />
+            </TabsContent>
+        {/if}
+
         <TabsContent value="activity">
             <div class="grid gap-6 lg:grid-cols-3">
                 <div class="lg:col-span-1">
@@ -749,7 +811,7 @@
                                 </div>
                             {:else}
                                 <div class="divide-y">
-                                    {#each activityGroups as group (group.id || group.group)}
+                                    {#each activityGroups as group, i (group.id ?? group.user_id ?? i)}
                                         <div
                                             class="flex items-center gap-4 px-5 py-4"
                                         >
@@ -922,15 +984,15 @@
             <div class="space-y-2">
                 <Label for="user-password"
                     >{editingUser
-                        ? 'Nueva contraseÃ±a (dejar vacÃ­o para mantener)'
-                        : 'ContraseÃ±a'}</Label
+                        ? 'Nueva contraseña (dejar vacío para mantener)'
+                        : 'Contraseña'}</Label
                 >
                 <Input
                     id="user-password"
                     type="password"
                     placeholder={editingUser
                         ? 'Sin cambios'
-                        : 'MÃ­nimo 8 caracteres'}
+                        : 'Mínimo 8 caracteres'}
                     bind:value={userFormPassword}
                     class={userFormErrors.password ? 'border-destructive' : ''}
                 />
@@ -940,6 +1002,15 @@
                     </p>
                 {/if}
             </div>
+            {#if editingUser && canCreateUser}
+                <div class="flex items-center gap-3 rounded-lg border bg-accent/30 p-3">
+                    <Checkbox id="user-verified" bind:checked={userFormVerified} />
+                    <Label for="user-verified" class="cursor-pointer text-sm font-medium">
+                        Email verificado
+                    </Label>
+                </div>
+            {/if}
+
             <div class="space-y-2">
                 <Label>Rol</Label>
                 {#if rolesLoading}
@@ -960,7 +1031,7 @@
                         <p
                             class="py-4 text-center text-sm text-muted-foreground"
                         >
-                            No hay roles disponibles. Crea uno en la pestaÃ±a
+                            No hay roles disponibles. Crea uno en la pestaña
                             Roles.
                         </p>
                     {/if}
@@ -1058,9 +1129,9 @@
         <DialogHeader>
             <DialogTitle>Eliminar usuario</DialogTitle>
             <DialogDescription>
-                Â¿EstÃ¡s seguro de eliminar a <strong
+                ¿Estás seguro de eliminar a <strong
                     >{deleteConfirmUser?.name ?? ''}</strong
-                >? Esta acciÃ³n no se puede deshacer.
+                >? Esta acción no se puede deshacer.
             </DialogDescription>
         </DialogHeader>
         <DialogFooter>

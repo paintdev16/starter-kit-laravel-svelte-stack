@@ -17,6 +17,14 @@ class LogLoginListener
             return;
         }
 
+        if (ActivityLog::where('user_id', $user->id)
+            ->where('action', 'auth.login')
+            ->where('created_at', '>=', now()->subSeconds(10))
+            ->exists()
+        ) {
+            return;
+        }
+
         $deviceInfo = DeviceDetectorService::fromRequest(request());
 
         ActivityLog::create([

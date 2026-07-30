@@ -57,6 +57,10 @@ class UsersController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (! $request->user()->hasAnyRole(['root', 'super-admin'])) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
@@ -72,6 +76,7 @@ class UsersController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'email_verified_at' => now(),
         ]);
 
         if (! empty($data['role'])) {
@@ -85,6 +90,12 @@ class UsersController extends Controller
 
     public function update(Request $request, User $user): JsonResponse
     {
+        if (! $request->user()->hasAnyRole(['root', 'super-admin'])
+            && $request->user()->id !== $user->id
+        ) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
         if ($user->isRoot() && $request->user()->id !== $user->id) {
             return response()->json(['message' => 'Solo el propio usuario root puede modificar su cuenta.'], 403);
         }
@@ -122,6 +133,10 @@ class UsersController extends Controller
 
     public function destroy(Request $request, User $user): JsonResponse
     {
+        if (! $request->user()->hasAnyRole(['root', 'super-admin'])) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
         if ($user->isRoot()) {
             return response()->json(['message' => 'No puedes eliminar un usuario root.'], 403);
         }

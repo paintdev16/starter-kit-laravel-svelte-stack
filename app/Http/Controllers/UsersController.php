@@ -35,16 +35,28 @@ class UsersController extends Controller
 
         $rootCount = User::role('root')->count();
         $canViewActivity = $request->user()->hasRole('root') || $request->user()->hasRole('super-admin');
+        $canManageTokens = $request->user()->hasRole('root') || $request->user()->hasRole('super-admin');
+        $canCreateUser = $request->user()->hasAnyRole(['root', 'super-admin']);
+        $canManageVerification = $request->user()->hasAnyRole(['root', 'super-admin']);
+        $canManageSocialite = $request->user()->can('socialite-manage');
 
         return Inertia::render('users/Index', [
             'users' => $users,
             'rootCount' => $rootCount,
             'canViewActivity' => $canViewActivity,
+            'canManageTokens' => $canManageTokens,
+            'canCreateUser' => $canCreateUser,
+            'canManageVerification' => $canManageVerification,
+            'canManageSocialite' => $canManageSocialite,
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
+        if (! $request->user()->hasAnyRole(['root', 'super-admin'])) {
+            abort(403, 'No tienes permiso para crear usuarios.');
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
@@ -60,6 +72,7 @@ class UsersController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'email_verified_at' => now(),
         ]);
 
         if (! empty($data['role'])) {
@@ -73,6 +86,12 @@ class UsersController extends Controller
 
     public function update(Request $request, User $user): RedirectResponse
     {
+        if (! $request->user()->hasAnyRole(['root', 'super-admin'])
+            && $request->user()->id !== $user->id
+        ) {
+            abort(403, 'No tienes permiso para modificar usuarios.');
+        }
+
         if ($user->isRoot() && $request->user()->id !== $user->id) {
             return redirect()->route('users.index')->withErrors(['general' => 'Solo el propio usuario root puede modificar su cuenta.']);
         }
@@ -103,6 +122,11 @@ class UsersController extends Controller
             $user->syncRoles($data['role'] ?? []);
         }
 
+        if ($request->has('verified') && $request->user()->hasAnyRole(['root', 'super-admin'])) {
+            $user->email_verified_at = $request->boolean('verified') ? now() : null;
+            $user->save();
+        }
+
         ActivityLoggerService::log($request, 'user.updated', "Usuario \"{$user->name}\" actualizado");
 
         return redirect()->route('users.index');
@@ -110,6 +134,10 @@ class UsersController extends Controller
 
     public function destroy(Request $request, User $user): RedirectResponse
     {
+        if (! $request->user()->hasAnyRole(['root', 'super-admin'])) {
+            abort(403, 'No tienes permiso para eliminar usuarios.');
+        }
+
         if ($user->isRoot()) {
             return redirect()->route('users.index')->withErrors(['general' => 'No puedes eliminar un usuario root.']);
         }
