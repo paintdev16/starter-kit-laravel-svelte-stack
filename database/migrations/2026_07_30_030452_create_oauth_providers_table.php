@@ -15,6 +15,7 @@ return new class extends Migration
             $table->text('client_secret');
             $table->text('redirect_uri');
             $table->boolean('enabled')->default(true);
+            $table->boolean('show_on_login')->default(true);
             $table->integer('sort')->default(0);
             $table->timestamps();
         });

@@ -2,12 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /** @property-read User|null $user */
 class ActivityLog extends Model
 {
+    use MassPrunable;
+
+    public function prunable(): Builder
+    {
+        return static::where('created_at', '<', now()->subDays(90));
+    }
+
     protected $fillable = [
         'user_id',
         'action',

@@ -14,11 +14,6 @@ return new class extends Migration
             $table->text('value')->nullable();
             $table->timestamps();
         });
-
-        DB::table('settings')->insert([
-            'key' => 'socialite_enabled',
-            'value' => 'true',
-        ]);
     }
 
     public function down(): void
