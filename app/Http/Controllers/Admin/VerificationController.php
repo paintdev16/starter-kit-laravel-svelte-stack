@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Users\ToggleVerification;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -9,6 +10,10 @@ use Illuminate\Http\Request;
 
 class VerificationController extends Controller
 {
+    public function __construct(
+        private readonly ToggleVerification $toggleVerification,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         if (! $request->user()->hasAnyRole(['root', 'super-admin'])) {
@@ -17,10 +22,10 @@ class VerificationController extends Controller
 
         $users = User::query()
             ->where('id', '!=', $request->user()->id)
-            ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'root'))
+            ->whereDoesntHave('roles', fn ($query) => $query->where('name', 'root'))
             ->orderBy('name')
             ->get()
-            ->map(fn ($user) => [
+            ->map(fn (User $user): array => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
@@ -43,8 +48,7 @@ class VerificationController extends Controller
             return response()->json(['message' => 'No se puede cambiar la verificación de este usuario.'], 403);
         }
 
-        $user->email_verified_at = $user->email_verified_at ? null : now();
-        $user->save();
+        $user = ($this->toggleVerification)($user);
 
         return response()->json([
             'id' => $user->id,

@@ -2,12 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Tokens\CreateApiToken;
+use App\Actions\Tokens\DeleteApiToken;
+use App\Actions\Tokens\ListApiTokens;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreApiTokenRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ApiTokenController extends Controller
 {
+    public function __construct(
+        private readonly ListApiTokens $listApiTokens,
+        private readonly CreateApiToken $createApiToken,
+        private readonly DeleteApiToken $deleteApiToken,
+    ) {}
+
     private function authorizeAccess(Request $request): void
     {
         if (! $request->user()->hasRole('root') && ! $request->user()->hasRole('super-admin')) {
@@ -19,40 +29,24 @@ class ApiTokenController extends Controller
     {
         $this->authorizeAccess($request);
 
-        $tokens = $request->user()->tokens()
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(fn ($token) => [
-                'id' => $token->id,
-                'name' => $token->name,
-                'abilities' => $token->abilities,
-                'last_used_at' => $token->last_used_at,
-                'created_at' => $token->created_at,
-            ]);
-
-        return response()->json($tokens);
+        return response()->json(($this->listApiTokens)($request->user()));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreApiTokenRequest $request): JsonResponse
     {
         $this->authorizeAccess($request);
 
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'abilities' => 'nullable|array',
-            'abilities.*' => 'string|exists:permissions,name',
-        ]);
-
+        $data = $request->validated();
         $abilities = $data['abilities'] ?? ['*'];
 
-        $token = $request->user()->createToken($data['name'], $abilities);
+        $token = ($this->createApiToken)($request->user(), $data['name'], $abilities);
 
         return response()->json([
-            'id' => $token->accessToken->id,
-            'name' => $token->accessToken->name,
-            'abilities' => $token->accessToken->abilities,
-            'plain_text_token' => $token->plainTextToken,
-            'created_at' => $token->accessToken->created_at,
+            'id' => $token['accessToken']->id,
+            'name' => $token['accessToken']->name,
+            'abilities' => $token['accessToken']->abilities,
+            'plain_text_token' => $token['plainTextToken'],
+            'created_at' => $token['accessToken']->created_at,
         ], 201);
     }
 
@@ -60,8 +54,7 @@ class ApiTokenController extends Controller
     {
         $this->authorizeAccess($request);
 
-        $token = $request->user()->tokens()->findOrFail($tokenId);
-        $token->delete();
+        ($this->deleteApiToken)($request->user(), $tokenId);
 
         return response()->json(null, 204);
     }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Actions\Settings\DeleteProfile;
+use App\Actions\Settings\UpdateProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
@@ -15,6 +17,11 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        private readonly UpdateProfile $updateProfile,
+        private readonly DeleteProfile $deleteProfile,
+    ) {}
+
     /**
      * Show the user's profile settings page.
      */
@@ -31,13 +38,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
+        ($this->updateProfile)($request->user(), $request->validated());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 
@@ -53,6 +54,7 @@ class ProfileController extends Controller
 
         if ($user->isRoot()) {
             $rootCount = User::role('root')->count();
+
             if ($rootCount <= 1) {
                 Inertia::flash('toast', ['type' => 'error', 'message' => 'No puedes eliminar la cuenta del único usuario root.']);
 
@@ -62,7 +64,7 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $user->delete();
+        ($this->deleteProfile)($user);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

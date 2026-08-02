@@ -2,35 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Avatars\DeleteAvatar;
+use App\Actions\Avatars\ListAvatars;
+use App\Actions\Avatars\UploadAvatar;
+use App\Http\Requests\Avatars\StoreAvatarRequest;
 use App\Models\Avatar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class AvatarController extends Controller
 {
+    public function __construct(
+        private readonly ListAvatars $listAvatars,
+        private readonly UploadAvatar $uploadAvatar,
+        private readonly DeleteAvatar $deleteAvatar,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
-        $avatars = $request->user()->avatars()->latest()->get()->map(fn (Avatar $a): array => [
-            'id' => $a->id,
-            'url' => $a->url,
-            'created_at' => $a->created_at,
-        ]);
-
-        return response()->json($avatars);
+        return response()->json(($this->listAvatars)($request->user()));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreAvatarRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
-        ]);
-
-        $path = $request->file('avatar')->store('avatars', 'public');
-
-        $request->user()->avatars()->create(['path' => $path]);
+        ($this->uploadAvatar)($request->user(), $request->file('avatar'));
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Avatar agregado.']);
 
@@ -43,11 +40,7 @@ class AvatarController extends Controller
             abort(403);
         }
 
-        if ($avatar->source === 'local') {
-            Storage::disk('public')->delete($avatar->path);
-        }
-
-        $avatar->delete();
+        ($this->deleteAvatar)($avatar);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Avatar eliminado.']);
 

@@ -2,44 +2,38 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Permissions\CreatePermission;
+use App\Actions\Permissions\DeletePermission;
+use App\Actions\Permissions\ListPermissions;
+use App\Actions\Permissions\UpdatePermission;
 use App\Http\Controllers\Controller;
-use App\Services\ActivityLoggerService;
+use App\Http\Requests\Admin\StorePermissionRequest;
+use App\Http\Requests\Admin\UpdatePermissionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
 {
+    public function __construct(
+        private readonly ListPermissions $listPermissions,
+        private readonly CreatePermission $createPermission,
+        private readonly UpdatePermission $updatePermission,
+        private readonly DeletePermission $deletePermission,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         abort_unless($request->user()->can('view-roles'), 403);
 
-        $permissions = Permission::all()->map(fn ($p) => [
-            'id' => $p->id,
-            'name' => $p->name,
-            'guard_name' => $p->guard_name,
-        ]);
-
-        return response()->json($permissions);
+        return response()->json(($this->listPermissions)());
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StorePermissionRequest $request): JsonResponse
     {
         abort_unless($request->user()->hasAnyRole(['root', 'super-admin']), 403);
 
-        $data = $request->validate([
-            'name' => 'required|string|unique:permissions,name',
-        ]);
-
-        $permission = Permission::create(['name' => $data['name'], 'guard_name' => 'web']);
-
-        $root = Role::where('name', 'root')->first();
-        if ($root) {
-            $root->givePermissionTo($permission);
-        }
-
-        ActivityLoggerService::log($request, 'permission.created', "Permiso creado: \"{$permission->name}\"");
+        $permission = ($this->createPermission)($request, $request->validated());
 
         return response()->json([
             'id' => $permission->id,
@@ -48,17 +42,11 @@ class PermissionController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, Permission $permission): JsonResponse
+    public function update(UpdatePermissionRequest $request, Permission $permission): JsonResponse
     {
         abort_unless($request->user()->hasAnyRole(['root', 'super-admin']), 403);
 
-        $data = $request->validate([
-            'name' => 'required|string|unique:permissions,name,'.$permission->id,
-        ]);
-
-        $permission->update(['name' => $data['name']]);
-
-        ActivityLoggerService::log($request, 'permission.updated', "Permiso actualizado: \"{$permission->name}\"");
+        $permission = ($this->updatePermission)($request, $permission, $request->validated());
 
         return response()->json([
             'id' => $permission->id,
@@ -71,10 +59,7 @@ class PermissionController extends Controller
     {
         abort_unless($request->user()->hasAnyRole(['root', 'super-admin']), 403);
 
-        $permissionName = $permission->name;
-        $permission->delete();
-
-        ActivityLoggerService::log($request, 'permission.deleted', "Permiso eliminado: \"{$permissionName}\"");
+        ($this->deletePermission)($request, $permission);
 
         return response()->json(null, 204);
     }

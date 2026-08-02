@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Actions\Settings\UpdatePassword;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
-use App\Services\ActivityLoggerService;
+use App\Support\PasskeyPresenter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -14,6 +15,10 @@ use Laravel\Fortify\Features;
 
 class SecurityController extends Controller
 {
+    public function __construct(
+        private readonly UpdatePassword $updatePassword,
+    ) {}
+
     /**
      * Show the user's security settings page.
      */
@@ -23,20 +28,7 @@ class SecurityController extends Controller
             'canManageTwoFactor' => Features::canManageTwoFactorAuthentication(),
             'canManagePasskeys' => Features::canManagePasskeys(),
             'passkeys' => Features::canManagePasskeys()
-                ? $request->user()
-                    ->passkeys()
-                    ->select(['id', 'name', 'credential', 'created_at', 'last_used_at'])
-                    ->latest()
-                    ->get()
-                    ->map(fn ($passkey) => [
-                        'id' => $passkey->id,
-                        'name' => $passkey->name,
-                        'authenticator' => $passkey->authenticator,
-                        'created_at_diff' => $passkey->created_at->diffForHumans(),
-                        'last_used_at_diff' => $passkey->last_used_at?->diffForHumans(),
-                    ])
-                    ->values()
-                    ->all()
+                ? PasskeyPresenter::collection($request->user())
                 : [],
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ];
@@ -56,12 +48,7 @@ class SecurityController extends Controller
      */
     public function update(PasswordUpdateRequest $request): RedirectResponse
     {
-        $user = $request->user();
-        $user->update([
-            'password' => $request->password,
-        ]);
-
-        ActivityLoggerService::log($request, 'auth.password_changed', "Contraseña cambiada: \"{$user->name}\"");
+        ($this->updatePassword)($request, $request->user(), $request->password);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 

@@ -2,33 +2,31 @@
 
 namespace App\Http\Controllers\Api\Settings;
 
+use App\Actions\Settings\DeleteProfile;
+use App\Actions\Settings\UpdateProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
 use App\Models\User;
+use App\Support\UserPresenter;
 use Illuminate\Http\JsonResponse;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        private readonly UpdateProfile $updateProfile,
+        private readonly DeleteProfile $deleteProfile,
+    ) {}
+
     public function update(ProfileUpdateRequest $request): JsonResponse
     {
         $user = $request->user();
-        $user->fill($request->validated());
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
+        ($this->updateProfile)($user, $request->validated());
 
         return response()->json([
             'message' => 'Perfil actualizado.',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'email_verified_at' => $user->email_verified_at,
-            ],
+            'user' => UserPresenter::toProfileArray($user),
         ]);
     }
 
@@ -38,12 +36,13 @@ class ProfileController extends Controller
 
         if ($user->isRoot()) {
             $rootCount = User::role('root')->count();
+
             if ($rootCount <= 1) {
                 return response()->json(['message' => 'No puedes eliminar la cuenta del único usuario root.'], 403);
             }
         }
 
-        $user->delete();
+        ($this->deleteProfile)($user);
 
         return response()->json(['message' => 'Cuenta eliminada.']);
     }

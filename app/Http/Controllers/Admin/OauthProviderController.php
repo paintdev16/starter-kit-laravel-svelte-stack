@@ -2,53 +2,39 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Oauth\DeleteProvider;
+use App\Actions\Oauth\StoreProvider;
+use App\Actions\Oauth\ToggleProvider;
+use App\Actions\Oauth\ToggleShowOnLogin;
+use App\Actions\Oauth\UpdateProvider;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreOauthProviderRequest;
+use App\Http\Requests\Admin\UpdateOauthProviderRequest;
 use App\Models\OauthProvider;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OauthProviderController extends Controller
 {
+    public function __construct(
+        private readonly StoreProvider $storeProvider,
+        private readonly UpdateProvider $updateProvider,
+        private readonly DeleteProvider $deleteProvider,
+        private readonly ToggleProvider $toggleProvider,
+        private readonly ToggleShowOnLogin $toggleShowOnLogin,
+    ) {}
+
     private function authorizeAccess(Request $request): void
     {
         abort_unless($request->user()->hasRole('root'), 403, 'No tienes permiso para gestionar proveedores OAuth.');
     }
 
-    public function index(Request $request): JsonResponse
+    /**
+     * @return array<string, mixed>
+     */
+    private function providerPayload(OauthProvider $provider): array
     {
-        $this->authorizeAccess($request);
-
-        $providers = OauthProvider::orderBy('sort')->orderBy('provider')->get()->map(fn ($p) => [
-            'id' => $p->id,
-            'provider' => $p->provider,
-            'client_id' => $p->client_id,
-            'redirect_uri' => $p->redirect_uri,
-            'enabled' => $p->enabled,
-            'show_on_login' => $p->show_on_login,
-            'sort' => $p->sort,
-            'created_at' => $p->created_at,
-        ]);
-
-        return response()->json($providers);
-    }
-
-    public function store(Request $request): JsonResponse
-    {
-        $this->authorizeAccess($request);
-
-        $data = $request->validate([
-            'provider' => 'required|string|max:100|unique:oauth_providers,provider',
-            'client_id' => 'required|string',
-            'client_secret' => 'required|string',
-            'redirect_uri' => 'required|url',
-            'enabled' => 'boolean',
-            'show_on_login' => 'boolean',
-            'sort' => 'integer|min:0',
-        ]);
-
-        $provider = OauthProvider::create($data);
-
-        return response()->json([
+        return [
             'id' => $provider->id,
             'provider' => $provider->provider,
             'client_id' => $provider->client_id,
@@ -56,46 +42,47 @@ class OauthProviderController extends Controller
             'enabled' => $provider->enabled,
             'show_on_login' => $provider->show_on_login,
             'sort' => $provider->sort,
+        ];
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $this->authorizeAccess($request);
+
+        $providers = OauthProvider::orderBy('sort')->orderBy('provider')->get();
+
+        return response()->json($providers->map(fn (OauthProvider $provider): array => [
+            ...$this->providerPayload($provider),
+            'created_at' => $provider->created_at,
+        ]));
+    }
+
+    public function store(StoreOauthProviderRequest $request): JsonResponse
+    {
+        $this->authorizeAccess($request);
+
+        $provider = ($this->storeProvider)($request->validated());
+
+        return response()->json([
+            ...$this->providerPayload($provider),
             'created_at' => $provider->created_at,
         ], 201);
     }
 
-    public function update(Request $request, OauthProvider $oauthProvider): JsonResponse
+    public function update(UpdateOauthProviderRequest $request, OauthProvider $oauthProvider): JsonResponse
     {
         $this->authorizeAccess($request);
 
-        $data = $request->validate([
-            'provider' => 'required|string|max:100|unique:oauth_providers,provider,'.$oauthProvider->id,
-            'client_id' => 'required|string',
-            'client_secret' => 'nullable|string',
-            'redirect_uri' => 'required|url',
-            'enabled' => 'boolean',
-            'show_on_login' => 'boolean',
-            'sort' => 'integer|min:0',
-        ]);
+        $provider = ($this->updateProvider)($oauthProvider, $request->validated());
 
-        if (empty($data['client_secret'])) {
-            unset($data['client_secret']);
-        }
-
-        $oauthProvider->update($data);
-
-        return response()->json([
-            'id' => $oauthProvider->id,
-            'provider' => $oauthProvider->provider,
-            'client_id' => $oauthProvider->client_id,
-            'redirect_uri' => $oauthProvider->redirect_uri,
-            'enabled' => $oauthProvider->enabled,
-            'show_on_login' => $oauthProvider->show_on_login,
-            'sort' => $oauthProvider->sort,
-        ]);
+        return response()->json($this->providerPayload($provider));
     }
 
     public function destroy(Request $request, OauthProvider $oauthProvider): JsonResponse
     {
         $this->authorizeAccess($request);
 
-        $oauthProvider->delete();
+        ($this->deleteProvider)($oauthProvider);
 
         return response()->json(null, 204);
     }
@@ -104,13 +91,11 @@ class OauthProviderController extends Controller
     {
         $this->authorizeAccess($request);
 
-        $oauthProvider->update([
-            'show_on_login' => ! $oauthProvider->show_on_login,
-        ]);
+        $provider = ($this->toggleShowOnLogin)($oauthProvider);
 
         return response()->json([
-            'id' => $oauthProvider->id,
-            'show_on_login' => $oauthProvider->show_on_login,
+            'id' => $provider->id,
+            'show_on_login' => $provider->show_on_login,
         ]);
     }
 
@@ -118,13 +103,11 @@ class OauthProviderController extends Controller
     {
         $this->authorizeAccess($request);
 
-        $oauthProvider->update([
-            'enabled' => ! $oauthProvider->enabled,
-        ]);
+        $provider = ($this->toggleProvider)($oauthProvider);
 
         return response()->json([
-            'id' => $oauthProvider->id,
-            'enabled' => $oauthProvider->enabled,
+            'id' => $provider->id,
+            'enabled' => $provider->enabled,
         ]);
     }
 }
