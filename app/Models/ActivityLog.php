@@ -12,6 +12,7 @@ class ActivityLog extends Model
 {
     use MassPrunable;
 
+    /** @return Builder<ActivityLog> */
     public function prunable(): Builder
     {
         return static::where('created_at', '<', now()->subDays(90));
