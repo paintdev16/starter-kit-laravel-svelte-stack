@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AvatarSource;
 use App\Models\Avatar;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -30,7 +31,7 @@ class AvatarService
 
     public function delete(Avatar $avatar): void
     {
-        if ($avatar->source === 'local') {
+        if ($avatar->source === AvatarSource::Local) {
             Storage::disk('public')->delete($avatar->path);
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\ActivityAction;
 use App\Models\ActivityLog;
 use App\Models\Setting;
 use App\Models\User;
@@ -41,7 +42,7 @@ class HandleInertiaRequests extends Middleware
         $lastLogin = null;
         if ($request->user()) {
             $lastLogin = ActivityLog::where('user_id', $request->user()->id)
-                ->where('action', 'auth.login')
+                ->where('action', ActivityAction::Login)
                 ->orderBy('created_at', 'desc')
                 ->first();
         }

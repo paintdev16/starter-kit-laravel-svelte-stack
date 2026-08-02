@@ -2,6 +2,7 @@
 
 namespace App\Actions\Settings;
 
+use App\Enums\ActivityAction;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use App\Services\SettingsService;
@@ -15,6 +16,6 @@ class UpdatePassword
     {
         $this->settings->updatePassword($user, $password);
 
-        ActivityLoggerService::log($request, 'auth.password_changed', "Contraseña cambiada: \"{$user->name}\"");
+        ActivityLoggerService::log($request, ActivityAction::PasswordChanged, "Contraseña cambiada: \"{$user->name}\"");
     }
 }

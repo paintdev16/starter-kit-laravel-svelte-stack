@@ -2,6 +2,7 @@
 
 namespace App\Actions\Users;
 
+use App\Enums\ActivityAction;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use App\Services\UserService;
@@ -17,6 +18,6 @@ class DeleteUser
 
         $this->users->delete($user);
 
-        ActivityLoggerService::log($request, 'user.deleted', "Usuario \"{$userName}\" eliminado");
+        ActivityLoggerService::log($request, ActivityAction::UserDeleted, "Usuario \"{$userName}\" eliminado");
     }
 }

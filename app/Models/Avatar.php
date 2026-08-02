@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AvatarSource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +12,10 @@ class Avatar extends Model
 
     protected $appends = ['url'];
 
+    protected $casts = [
+        'source' => AvatarSource::class,
+    ];
+
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
@@ -19,7 +24,7 @@ class Avatar extends Model
 
     public function isExternal(): bool
     {
-        return $this->source === 'url';
+        return $this->source === AvatarSource::Url;
     }
 
     public function getUrlAttribute(): string

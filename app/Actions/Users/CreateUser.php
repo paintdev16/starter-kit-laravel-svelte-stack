@@ -2,6 +2,7 @@
 
 namespace App\Actions\Users;
 
+use App\Enums\ActivityAction;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use App\Services\UserService;
@@ -18,7 +19,7 @@ class CreateUser
     {
         $user = $this->users->create($data);
 
-        ActivityLoggerService::log($request, 'user.created', "Usuario \"{$user->name}\" creado");
+        ActivityLoggerService::log($request, ActivityAction::UserCreated, "Usuario \"{$user->name}\" creado");
 
         return $user;
     }

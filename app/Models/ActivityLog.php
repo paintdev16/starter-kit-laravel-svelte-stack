@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ActivityAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,10 @@ class ActivityLog extends Model
         'os_version',
         'browser',
         'browser_version',
+    ];
+
+    protected $casts = [
+        'action' => ActivityAction::class,
     ];
 
     /** @return BelongsTo<User, $this> */

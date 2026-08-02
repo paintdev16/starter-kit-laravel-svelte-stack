@@ -2,6 +2,7 @@
 
 namespace App\Actions\Roles;
 
+use App\Enums\ActivityAction;
 use App\Services\ActivityLoggerService;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class UpdateRole
     {
         $role = $this->roles->update($role, $data);
 
-        ActivityLoggerService::log($request, 'role.updated', "Rol actualizado: \"{$role->name}\"");
+        ActivityLoggerService::log($request, ActivityAction::RoleUpdated, "Rol actualizado: \"{$role->name}\"");
 
         return $role;
     }

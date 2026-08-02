@@ -2,6 +2,7 @@
 
 namespace App\Actions\Permissions;
 
+use App\Enums\ActivityAction;
 use App\Services\ActivityLoggerService;
 use App\Services\PermissionService;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class CreatePermission
     {
         $permission = $this->permissions->create($data);
 
-        ActivityLoggerService::log($request, 'permission.created', "Permiso creado: \"{$permission->name}\"");
+        ActivityLoggerService::log($request, ActivityAction::PermissionCreated, "Permiso creado: \"{$permission->name}\"");
 
         return $permission;
     }

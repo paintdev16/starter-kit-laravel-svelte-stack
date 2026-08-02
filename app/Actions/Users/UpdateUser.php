@@ -2,6 +2,7 @@
 
 namespace App\Actions\Users;
 
+use App\Enums\ActivityAction;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use App\Services\UserService;
@@ -18,7 +19,7 @@ class UpdateUser
     {
         $user = $this->users->update($user, $data, $verified);
 
-        ActivityLoggerService::log($request, 'user.updated', "Usuario \"{$user->name}\" actualizado");
+        ActivityLoggerService::log($request, ActivityAction::UserUpdated, "Usuario \"{$user->name}\" actualizado");
 
         return $user;
     }

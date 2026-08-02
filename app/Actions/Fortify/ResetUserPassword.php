@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Concerns\PasswordValidationRules;
+use App\Enums\ActivityAction;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\Validator;
@@ -27,6 +28,6 @@ class ResetUserPassword implements ResetsUserPasswords
             'password' => $input['password'],
         ])->save();
 
-        ActivityLoggerService::log(request(), 'auth.password_reset', "Contraseña restablecida: \"{$user->name}\"", $user->id);
+        ActivityLoggerService::log(request(), ActivityAction::PasswordReset, "Contraseña restablecida: \"{$user->name}\"", $user->id);
     }
 }

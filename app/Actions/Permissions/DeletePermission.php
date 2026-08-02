@@ -2,6 +2,7 @@
 
 namespace App\Actions\Permissions;
 
+use App\Enums\ActivityAction;
 use App\Services\ActivityLoggerService;
 use App\Services\PermissionService;
 use Illuminate\Http\Request;
@@ -17,6 +18,6 @@ class DeletePermission
 
         $this->permissions->delete($permission);
 
-        ActivityLoggerService::log($request, 'permission.deleted', "Permiso eliminado: \"{$permissionName}\"");
+        ActivityLoggerService::log($request, ActivityAction::PermissionDeleted, "Permiso eliminado: \"{$permissionName}\"");
     }
 }

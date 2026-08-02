@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ActivityAction;
 use App\Models\ActivityLog;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -33,13 +34,13 @@ class ActivityService
             ->groupBy(fn ($log) => $log->user_id.'_'.($log->user->name ?? 'Desconocido'))
             ->map(function ($items, $key) {
                 $first = $items->first();
-                $lastLogin = $items->firstWhere('action', 'auth.login')?->created_at;
+                $lastLogin = $items->firstWhere('action', ActivityAction::Login)?->created_at;
 
                 return [
                     'user_id' => $first->user_id,
                     'user_name' => $first->user->name ?? 'Desconocido',
                     'count' => $items->count(),
-                    'last_action' => $first->description ?? $first->action,
+                    'last_action' => $first->description ?? $first->action->value,
                     'last_date' => $first->created_at,
                     'last_login' => $lastLogin,
                     'device_type' => $first->device_type,

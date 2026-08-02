@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AvatarSource;
 use App\Models\OauthProvider;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -111,7 +112,7 @@ class SocialiteController extends Controller
             return;
         }
 
-        $existingSocial = $user->avatars()->where('source', 'url')->first();
+        $existingSocial = $user->avatars()->where('source', AvatarSource::Url)->first();
 
         if ($existingSocial) {
             $existingSocial->update(['path' => $avatarUrl]);
@@ -119,13 +120,13 @@ class SocialiteController extends Controller
             return;
         }
 
-        if ($user->avatars()->where('source', 'local')->exists()) {
+        if ($user->avatars()->where('source', AvatarSource::Local)->exists()) {
             return;
         }
 
         $user->avatars()->create([
             'path' => $avatarUrl,
-            'source' => 'url',
+            'source' => AvatarSource::Url,
         ]);
     }
 }

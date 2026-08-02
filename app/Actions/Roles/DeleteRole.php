@@ -2,6 +2,7 @@
 
 namespace App\Actions\Roles;
 
+use App\Enums\ActivityAction;
 use App\Services\ActivityLoggerService;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
@@ -17,6 +18,6 @@ class DeleteRole
 
         $this->roles->delete($role);
 
-        ActivityLoggerService::log($request, 'role.deleted', "Rol eliminado: \"{$roleName}\"");
+        ActivityLoggerService::log($request, ActivityAction::RoleDeleted, "Rol eliminado: \"{$roleName}\"");
     }
 }

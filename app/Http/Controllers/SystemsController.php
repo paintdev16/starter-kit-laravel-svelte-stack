@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\ServiceManager;
+use App\Enums\ActivityAction;
 use App\Models\Setting;
 use App\Services\ActivityLoggerService;
 use Illuminate\Http\JsonResponse;
@@ -91,7 +92,7 @@ class SystemsController extends Controller
 
         ActivityLoggerService::log(
             $request,
-            'realtime.toggled',
+            ActivityAction::RealtimeToggled,
             'Realtime '.($running ? 'activado' : 'desactivado').' ('.config('services.manager', 'local').')',
         );
 

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Permissions;
 
+use App\Enums\ActivityAction;
 use App\Services\ActivityLoggerService;
 use App\Services\PermissionService;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class UpdatePermission
     {
         $permission = $this->permissions->update($permission, $data);
 
-        ActivityLoggerService::log($request, 'permission.updated', "Permiso actualizado: \"{$permission->name}\"");
+        ActivityLoggerService::log($request, ActivityAction::PermissionUpdated, "Permiso actualizado: \"{$permission->name}\"");
 
         return $permission;
     }

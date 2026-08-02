@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Enums\ActivityAction;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Services\DeviceDetectorService;
@@ -18,7 +19,7 @@ class LogLoginListener
         }
 
         if (ActivityLog::where('user_id', $user->id)
-            ->where('action', 'auth.login')
+            ->where('action', ActivityAction::Login)
             ->where('created_at', '>=', now()->subSeconds(10))
             ->exists()
         ) {
@@ -29,7 +30,7 @@ class LogLoginListener
 
         ActivityLog::create([
             'user_id' => $user->id,
-            'action' => 'auth.login',
+            'action' => ActivityAction::Login,
             'description' => "Inicio de sesión: \"{$user->name}\"",
             'user_agent' => $deviceInfo['user_agent'],
             'ip_address' => $deviceInfo['ip_address'],
