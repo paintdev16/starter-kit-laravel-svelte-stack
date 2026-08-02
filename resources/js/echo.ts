@@ -10,6 +10,7 @@ declare global {
 
 function xsrfToken(): string {
     const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+
     return match ? decodeURIComponent(match[1]) : '';
 }
 
@@ -51,6 +52,7 @@ function initEcho(): Echo<'reverb'> | null {
                                 `Broadcast auth failed: ${response.status}`,
                             );
                         }
+
                         return response.json();
                     })
                     .then((data) => callback(null, data))

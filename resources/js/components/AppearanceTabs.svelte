@@ -1,11 +1,11 @@
 <script lang="ts">
+    import { Monitor, Moon, Sun } from '@lucide/svelte';
+
     import { Button } from '@/components/ui/button';
 
     import { themeState } from '@/lib/theme.svelte';
     import { cn } from '@/lib/utils';
     import type { Appearance } from '@/types/ui';
-
-    import { Monitor, Moon, Sun } from '@lucide/svelte';
 
     const { updateAppearance } = themeState();
 

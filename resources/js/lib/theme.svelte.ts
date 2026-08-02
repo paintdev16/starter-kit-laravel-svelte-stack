@@ -100,7 +100,9 @@ export function initializeTheme(): () => void {
 
     try {
         localStorage.removeItem(APPEARANCE_COOKIE);
-    } catch {}
+    } catch {
+        // ignore errors removing legacy storage key
+    }
 
     stopListeningForSystemTheme();
 

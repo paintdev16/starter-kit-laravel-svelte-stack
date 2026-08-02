@@ -8,6 +8,7 @@
 <script lang="ts">
     import { Form } from '@inertiajs/svelte';
     import AppHead from '@/components/AppHead.svelte';
+    import { Google, Github, Facebook, X, Apple } from '@/components/icons';
     import InputError from '@/components/InputError.svelte';
     import PasskeyVerify from '@/components/PasskeyVerify.svelte';
     import PasswordInput from '@/components/PasswordInput.svelte';
@@ -20,7 +21,6 @@
     import { register } from '@/routes';
     import { store } from '@/routes/login';
     import { request } from '@/routes/password';
-    import { Google, Github, Facebook, X, Apple } from '@/components/icons';
 
     let {
         status = '',
@@ -58,6 +58,7 @@
             x: X,
             apple: Apple,
         };
+
         return icons[name];
     }
 </script>
