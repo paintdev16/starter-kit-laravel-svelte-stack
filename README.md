@@ -1,97 +1,58 @@
-# app-paint
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-Aplicación web construida con **Laravel 13 + Svelte 5 + Inertia** que combina un panel de administración con autenticación avanzada, control de acceso por roles y permisos, auditoría de actividad y soporte en tiempo real.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Características
+## About Laravel
 
-- **Autenticación**: registro, login, verificación de email, autenticación de dos factores (2FA/TOTP), passkeys (WebAuthn) y recuperación de contraseña — todo vía Laravel Fortify.
-- **Login social**: Google y GitHub mediante Socialite, configurables desde el panel admin.
-- **RBAC**: roles y permisos con Spatie Permission (`root`, `super-admin`, `admin`, `user`).
-- **Auditoría**: registro de actividad por usuario con detección de dispositivo, SO y navegador (matomo/device-detector), agrupada y con estado online.
-- **Avatares**: subida local y avatar desde proveedores sociales.
-- **API**: tokens de acceso con Laravel Sanctum y endpoints REST para clientes externos.
-- **Tiempo real**: Laravel Reverb con gestión del servicio (local, systemd o supervisor) desde la propia UI.
-- **Gestión de usuarios**: búsqueda global, verificación manual de email y control de actividad.
-- **Seguridad**: rate limiting en login, recuperación de contraseña y otros endpoints sensibles.
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## Stack
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-| Capa | Tecnologías |
-| --- | --- |
-| Backend | PHP 8.3+, Laravel 13, Fortify, Sanctum, Socialite, Spatie Permission, Reverb, matomo/device-detector |
-| Frontend | Svelte 5, TypeScript, Inertia v3, Tailwind CSS 4, shadcn-svelte (bits-ui), Vite |
-| Calidad | Pest, PHPStan, Pint, ESLint, Prettier, svelte-check |
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Requisitos
+## Learning Laravel
 
-- PHP 8.3 o superior
-- Composer
-- Node.js 22 o superior
-- SQLite (por defecto), MySQL o PostgreSQL
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-## Instalación
+In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-1. Clona el repositorio y entra en el directorio.
-2. Instala dependencias y prepara el entorno:
+You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
 
-   ```bash
-   composer run setup
-   ```
+## Agentic Development
 
-   Esto copia `.env.example` a `.env`, genera la `APP_KEY`, ejecuta las migraciones y compila los assets.
-
-3. Configura `.env` con tus credenciales:
-
-   - **Reverb** (tiempo real): `REVERB_APP_ID`, `REVERB_APP_KEY`, `REVERB_APP_SECRET`.
-   - **OAuth** (login social): `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` y `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET` si quieres usarlo.
-   - **Gestión de servicios**: `SERVICE_MANAGER=local|systemd|supervisor` (ver `.env.example`).
-
-4. Siembra los roles, permisos y datos iniciales:
-
-   ```bash
-   php artisan migrate --seed
-   ```
-
-5. Arranca en desarrollo (servidor, cola y Vite):
-
-   ```bash
-   composer run dev
-   ```
-
-   o de forma separada: `php artisan serve`, `php artisan queue:listen` y `npm run dev`.
-
-## Comandos
-
-| Comando | Descripción |
-| --- | --- |
-| `composer run dev` | Servidor + cola + Vite en paralelo |
-| `composer run lint` | Aplica Pint |
-| `composer run lint:check` | Verifica el estilo con Pint |
-| `composer run types:check` | Analiza tipos con PHPStan |
-| `composer run test` | Pint + PHPStan + Pest |
-| `composer run ci:check` | Verificación completa de CI |
-| `npm run dev` / `npm run build` | Assets en desarrollo / producción |
-| `npm run lint` / `npm run format` / `npm run types:check` | Calidad del frontend |
-
-## Arquitectura
-
-La lógica de negocio está organizada en capas y es compartida entre la interfaz web (Inertia) y la API (JSON):
-
-- **`app/Actions/<Dominio>/`** — coordinan los casos de uso (orquestan los pasos y la auditoría).
-- **`app/Services/`** — tareas de dominio específicas y reutilizables.
-- **`app/Http/Requests/`** — validación de entrada (Form Requests).
-- **`app/Enums/`** — enums tipados de dominio (`ActivityAction`, `AvatarSource`).
-- **`app/Support/`** — presentadores que dan forma a las respuestas.
-- **`app/Http/Controllers/`** — delgados: autorización + respuesta (Inertia o JSON).
-
-## Testing
-
-La suite usa Pest:
+Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
 
 ```bash
-composer run test
+composer require laravel/boost --dev
+
+php artisan boost:install
 ```
 
-## Licencia
+Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
 
-Este proyecto está licenciado bajo la **MIT License**.
+## Contributing
+
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
