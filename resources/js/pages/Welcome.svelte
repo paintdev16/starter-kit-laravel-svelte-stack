@@ -164,7 +164,7 @@
                         class="text-4xl font-bold leading-tight tracking-tight md:text-6xl lg:text-7xl"
                     >
                         Construye tu aplicación con
-                        <span class="text-primary"> Laravel + Svelte</span>
+                        <span class="text-primary"> AppPaint</span>
                     </h1>
                     <p
                         class="mt-4 max-w-xl mx-auto text-base text-muted-foreground md:text-lg"

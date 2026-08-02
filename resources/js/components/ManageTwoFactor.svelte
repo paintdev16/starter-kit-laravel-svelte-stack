@@ -45,7 +45,10 @@
 
                 <div>
                     {#if twoFactorAuth.hasSetupData()}
-                        <Button onclick={() => (showSetupModal = true)}>
+                        <Button
+                            variant="success"
+                            onclick={() => (showSetupModal = true)}
+                        >
                             <ShieldCheck class="size-4" />Continuar
                             configuración
                         </Button>
@@ -55,7 +58,11 @@
                             onSuccess={() => (showSetupModal = true)}
                         >
                             {#snippet children({ processing })}
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    variant="success"
+                                    type="submit"
+                                    disabled={processing}
+                                >
                                     Activar 2FA
                                 </Button>
                             {/snippet}

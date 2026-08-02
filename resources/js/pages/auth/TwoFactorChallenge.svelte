@@ -88,7 +88,7 @@
                     <span>o puedes </span>
                     <button
                         type="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                        class="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                         onclick={() => toggleRecoveryMode(clearErrors)}
                     >
                         {authConfigContent.buttonText}
@@ -114,7 +114,7 @@
                     <span>o puedes </span>
                     <button
                         type="button"
-                        class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                        class="text-foreground underline decoration-border underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current!"
                         onclick={() => toggleRecoveryMode(clearErrors)}
                     >
                         {authConfigContent.buttonText}

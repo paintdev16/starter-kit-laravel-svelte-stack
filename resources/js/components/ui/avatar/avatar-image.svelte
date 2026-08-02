@@ -5,6 +5,7 @@
 	let {
 		ref = $bindable(null),
 		class: className,
+		referrerpolicy = "no-referrer",
 		...restProps
 	}: AvatarPrimitive.ImageProps = $props();
 </script>
@@ -13,5 +14,6 @@
 	bind:ref
 	data-slot="avatar-image"
 	class={cn("rounded-full aspect-square size-full object-cover", className)}
+	{referrerpolicy}
 	{...restProps}
 />

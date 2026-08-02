@@ -17,7 +17,7 @@
     } = $props();
 </script>
 
-<AppShell variant="sidebar">
+<AppShell>
     <AppSidebar />
     <AppContent class="overflow-x-hidden">
         <AppSidebarHeader {breadcrumbs} />

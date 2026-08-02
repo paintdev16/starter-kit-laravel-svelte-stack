@@ -97,6 +97,7 @@
             <div class="flex items-center gap-4">
                 <Button
                     type="submit"
+                    variant="info"
                     disabled={processing}
                     data-test="update-profile-button">Guardar</Button
                 >

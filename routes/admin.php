@@ -15,12 +15,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::delete('api-tokens/{tokenId}', [ApiTokenController::class, 'destroy'])->name('api-tokens.destroy');
     Route::get('verification', [VerificationController::class, 'index'])->name('verification.index');
     Route::patch('verification/{user}', [VerificationController::class, 'toggle'])->name('verification.toggle');
-    Route::middleware('can:socialite-manage')->group(function () {
-        Route::get('oauth-providers', [OauthProviderController::class, 'index'])->name('oauth-providers.index');
-        Route::post('oauth-providers', [OauthProviderController::class, 'store'])->name('oauth-providers.store');
-        Route::put('oauth-providers/{oauthProvider}', [OauthProviderController::class, 'update'])->name('oauth-providers.update');
-        Route::delete('oauth-providers/{oauthProvider}', [OauthProviderController::class, 'destroy'])->name('oauth-providers.destroy');
-        Route::patch('oauth-providers/{oauthProvider}/toggle', [OauthProviderController::class, 'toggle'])->name('oauth-providers.toggle');
-        Route::patch('oauth-providers/{oauthProvider}/show-on-login', [OauthProviderController::class, 'toggleShowOnLogin'])->name('oauth-providers.show-on-login');
-    });
+    Route::get('oauth-providers', [OauthProviderController::class, 'index'])->name('oauth-providers.index');
+    Route::post('oauth-providers', [OauthProviderController::class, 'store'])->name('oauth-providers.store');
+    Route::put('oauth-providers/{oauthProvider}', [OauthProviderController::class, 'update'])->name('oauth-providers.update');
+    Route::delete('oauth-providers/{oauthProvider}', [OauthProviderController::class, 'destroy'])->name('oauth-providers.destroy');
+    Route::patch('oauth-providers/{oauthProvider}/toggle', [OauthProviderController::class, 'toggle'])->name('oauth-providers.toggle');
+    Route::patch('oauth-providers/{oauthProvider}/show-on-login', [OauthProviderController::class, 'toggleShowOnLogin'])->name('oauth-providers.show-on-login');
 });

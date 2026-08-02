@@ -43,7 +43,10 @@ class AvatarController extends Controller
             abort(403);
         }
 
-        Storage::disk('public')->delete($avatar->path);
+        if ($avatar->source === 'local') {
+            Storage::disk('public')->delete($avatar->path);
+        }
+
         $avatar->delete();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Avatar eliminado.']);

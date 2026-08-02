@@ -38,7 +38,7 @@ class UsersController extends Controller
         $canManageTokens = $request->user()->hasRole('root') || $request->user()->hasRole('super-admin');
         $canCreateUser = $request->user()->hasAnyRole(['root', 'super-admin']);
         $canManageVerification = $request->user()->hasAnyRole(['root', 'super-admin']);
-        $canManageSocialite = $request->user()->can('socialite-manage');
+        $canViewRoles = $request->user()->can('view-roles');
 
         return Inertia::render('users/Index', [
             'users' => $users,
@@ -47,7 +47,7 @@ class UsersController extends Controller
             'canManageTokens' => $canManageTokens,
             'canCreateUser' => $canCreateUser,
             'canManageVerification' => $canManageVerification,
-            'canManageSocialite' => $canManageSocialite,
+            'canViewRoles' => $canViewRoles,
         ]);
     }
 

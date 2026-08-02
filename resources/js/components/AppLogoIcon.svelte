@@ -10,14 +10,93 @@
 
 <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 40 42"
+    viewBox="-10 -10 194 250"
     class={className}
     {...rest}
 >
-    <path
-        fill="currentColor"
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M17.2 5.633 8.6.855 0 5.633v26.51l16.2 9 16.2-9v-8.442l7.6-4.223V9.856l-8.6-4.777-8.6 4.777V18.3l-5.6 3.111V5.633ZM38 18.301l-5.6 3.11v-6.157l5.6-3.11V18.3Zm-1.06-7.856-5.54 3.078-5.54-3.079 5.54-3.078 5.54 3.079ZM24.8 18.3v-6.157l5.6 3.111v6.158L24.8 18.3Zm-1 1.732 5.54 3.078-13.14 7.302-5.54-3.078 13.14-7.3v-.002Zm-16.2 7.89 7.6 4.222V38.3L2 30.966V7.92l5.6 3.111v16.892ZM8.6 9.3 3.06 6.222 8.6 3.143l5.54 3.08L8.6 9.3Zm21.8 15.51-13.2 7.334V38.3l13.2-7.334v-6.156ZM9.6 11.034l5.6-3.11v14.6l-5.6 3.11v-14.6Z"
-    />
+    <style>
+        .f-p1 {
+            fill: light-dark(#8b3cf9, #a66bff);
+        }
+        .f-p2 {
+            fill: light-dark(#7124e0, #9355ff);
+        }
+        .f-p3 {
+            fill: light-dark(#5a0fea, #7d3dff);
+        }
+        .f-p4 {
+            fill: light-dark(#4b0dbf, #6b2ee0);
+        }
+
+        .f-c1 {
+            fill: light-dark(#6fd0f5, #8fe0ff);
+        }
+        .f-c2 {
+            fill: light-dark(#43b8e8, #5fcbf5);
+        }
+        .f-c3 {
+            fill: light-dark(#29abe2, #4dbeee);
+        }
+        .f-c4 {
+            fill: light-dark(#1e8fc7, #3aaede);
+        }
+
+        .f-b1 {
+            fill: light-dark(#4fb6ff, #6fc5ff);
+        }
+        .f-b2 {
+            fill: light-dark(#1e9eff, #47b0ff);
+        }
+        .f-b3 {
+            fill: light-dark(#0095ff, #33a9ff);
+        }
+        .f-b4 {
+            fill: light-dark(#0070cc, #1e8fe0);
+        }
+
+        .f-v1 {
+            fill: light-dark(#8d82f5, #a79cff);
+        }
+        .f-v2 {
+            fill: light-dark(#6e62ee, #8c81ff);
+        }
+        .f-v3 {
+            fill: light-dark(#5b4fe9, #7a6eff);
+        }
+        .f-v4 {
+            fill: light-dark(#4038b0, #5c52d6);
+        }
+
+        .shadow {
+            filter: drop-shadow(
+                0 4px 6px light-dark(rgba(26, 10, 77, 0.25), rgba(0, 0, 0, 0.5))
+            );
+        }
+    </style>
+
+    <g class="shadow">
+        <!-- purple flag: 4 facets fanned from center -->
+        <path class="f-p1" d="M24,125 L0,45 L48,45 Z" />
+        <path class="f-p2" d="M24,125 L48,45 L48,180 Z" />
+        <path class="f-p3" d="M24,125 L48,180 L0,230 Z" />
+        <path class="f-p4" d="M24,125 L0,230 L0,45 Z" />
+
+        <!-- cyan trapezoid: 4 facets fanned from center -->
+        <path class="f-c1" d="M95,22.5 L48,0 L110,0 Z" />
+        <path class="f-c2" d="M95,22.5 L110,0 L174,45 Z" />
+        <path class="f-c3" d="M95,22.5 L174,45 L48,45 Z" />
+        <path class="f-c4" d="M95,22.5 L48,45 L48,0 Z" />
+
+        <!-- blue rectangle: 4 facets fanned from center -->
+        <path class="f-b1" d="M150,80 L126,45 L174,45 Z" />
+        <path class="f-b2" d="M150,80 L174,45 L174,115 Z" />
+        <path class="f-b3" d="M150,80 L174,115 L126,115 Z" />
+        <path class="f-b4" d="M150,80 L126,115 L126,45 Z" />
+
+        <!-- violet rectangle: 4 facets fanned from center -->
+        <path class="f-v1" d="M87,130 L48,115 L126,115 Z" />
+        <path class="f-v2" d="M87,130 L126,115 L126,145 Z" />
+        <path class="f-v3" d="M87,130 L126,145 L48,145 Z" />
+        <path class="f-v4" d="M87,130 L48,145 L48,115 Z" />
+    </g>
 </svg>

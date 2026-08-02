@@ -6,7 +6,6 @@
         EyeOff,
         KeyRound,
         Plus,
-        Shield,
         Trash2,
     } from '@lucide/svelte';
     import { Button } from '@/components/ui/button';
@@ -44,10 +43,7 @@
         guard_name: string;
     }
 
-    let {
-        active = false,
-        canManageTokens = false,
-    }: { active?: boolean; canManageTokens?: boolean } = $props();
+    let { active = false }: { active?: boolean } = $props();
 
     let tokens = $state<TokenItem[]>([]);
     let allPermissions = $state<PermissionItem[]>([]);
@@ -230,126 +226,105 @@
     });
 </script>
 
-{#if !canManageTokens}
-    <div
-        class="flex flex-col items-center justify-center gap-4 rounded-xl border bg-card py-20"
-    >
-        <Shield class="size-12 text-muted-foreground/30" />
-        <div class="text-center">
-            <p class="text-base font-medium text-muted-foreground">
-                Acceso restringido
-            </p>
-            <p class="mt-1 text-sm text-muted-foreground/60">
-                Solo los usuarios con rol <strong>root</strong>
-                o <strong>super-admin</strong> pueden gestionar tokens de API.
-            </p>
-        </div>
-    </div>
-{:else}
-    <div
-        class="flex items-center justify-between rounded-xl bg-secondary/60 p-4 backdrop-blur-xl"
-    >
-        <p class="text-sm text-muted-foreground">
-            <span class="font-semibold text-foreground">{tokens.length}</span>
-            {tokens.length === 1 ? 'token generado' : 'tokens generados'}
-        </p>
-        <Button size="sm" onclick={openCreateDialog}>
-            <Plus class="mr-1.5 size-4" />
-            Nuevo token
-        </Button>
-    </div>
+<div
+    class="flex items-center justify-between rounded-xl bg-secondary/60 p-4 backdrop-blur-xl"
+>
+    <p class="text-sm text-muted-foreground">
+        <span class="font-semibold text-foreground">{tokens.length}</span>
+        {tokens.length === 1 ? 'token generado' : 'tokens generados'}
+    </p>
+    <Button size="sm" variant="success" onclick={openCreateDialog}>
+        <Plus class="mr-1.5 size-4" />
+        Nuevo token
+    </Button>
+</div>
 
-    <div class="mt-4">
-        {#if tokensLoading}
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {#each [1, 2, 3] as _, i (i)}
-                    <div class="rounded-xl border p-5">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <Skeleton class="size-9 rounded-lg" />
-                                <Skeleton class="h-4 w-28" />
-                            </div>
-                        </div>
-                        <div class="mt-4 space-y-2.5">
-                            <Skeleton class="h-3 w-20" />
-                            <div class="flex flex-wrap gap-1.5">
-                                <Skeleton class="h-5 w-16 rounded-md" />
-                                <Skeleton class="h-5 w-20 rounded-md" />
-                            </div>
+<div class="mt-4">
+    {#if tokensLoading}
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {#each [1, 2, 3] as _, i (i)}
+                <div class="rounded-xl border p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <Skeleton class="size-9 rounded-lg" />
+                            <Skeleton class="h-4 w-28" />
                         </div>
                     </div>
-                {/each}
+                    <div class="mt-4 space-y-2.5">
+                        <Skeleton class="h-3 w-20" />
+                        <div class="flex flex-wrap gap-1.5">
+                            <Skeleton class="h-5 w-16 rounded-md" />
+                            <Skeleton class="h-5 w-20 rounded-md" />
+                        </div>
+                    </div>
+                </div>
+            {/each}
+        </div>
+    {:else if tokens.length === 0}
+        <div class="flex flex-col items-center justify-center gap-4 py-20">
+            <div
+                class="flex size-16 items-center justify-center rounded-2xl bg-secondary"
+            >
+                <KeyRound class="size-8 text-secondary-foreground-soft" />
             </div>
-        {:else if tokens.length === 0}
-            <div class="flex flex-col items-center justify-center gap-4 py-20">
+            <div class="text-center">
+                <p class="text-base font-medium text-foreground">
+                    No hay tokens de API
+                </p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    Crea un token para integraciones con terceros
+                </p>
+            </div>
+        </div>
+    {:else}
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {#each tokens as token (token.id)}
                 <div
-                    class="flex size-16 items-center justify-center rounded-2xl bg-secondary"
+                    class="group relative overflow-hidden rounded-xl border border-card-primary-border bg-card-primary/40 p-5 transition-all hover:shadow-sm"
                 >
-                    <KeyRound class="size-8 text-secondary-foreground-soft" />
-                </div>
-                <div class="text-center">
-                    <p class="text-base font-medium text-foreground">
-                        No hay tokens de API
-                    </p>
-                    <p class="mt-1 text-sm text-muted-foreground">
-                        Crea un token para integraciones con terceros
-                    </p>
-                </div>
-            </div>
-        {:else}
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {#each tokens as token (token.id)}
-                    <div
-                        class="group relative overflow-hidden rounded-xl border p-5 transition-all hover:shadow-sm"
-                    >
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3 min-w-0 flex-1">
-                                <div
-                                    class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent"
-                                >
-                                    <KeyRound
-                                        class="size-4.5 text-accent-foreground"
-                                    />
-                                </div>
-                                <h3
-                                    class="truncate text-sm font-semibold text-foreground"
-                                >
-                                    {token.name}
-                                </h3>
-                            </div>
-                            <button
-                                class="ml-2 inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition-all hover:bg-card-destructive hover:text-destructive group-hover:opacity-100"
-                                onclick={() => (deleteConfirmToken = token)}
-                                aria-label="Eliminar token"
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 min-w-0 flex-1">
+                            <div
+                                class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-card-primary/80"
                             >
-                                <Trash2 class="size-3.5" />
-                            </button>
-                        </div>
-                        <div class="mt-3.5 space-y-2.5">
-                            <p class="text-xs text-muted-foreground">
-                                Último uso: {formatDate(token.last_used_at)}
-                            </p>
-                            <div class="flex flex-wrap gap-1.5">
-                                {#each token.abilities as ability (ability)}
-                                    <span
-                                        class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-secondary-foreground-soft"
-                                    >
-                                        {ability === '*'
-                                            ? 'Acceso total'
-                                            : ability}
-                                    </span>
-                                {/each}
+                                <KeyRound class="size-4.5 text-primary" />
                             </div>
-                            <p class="text-[10px] text-muted-foreground/60">
-                                Creado {formatDate(token.created_at)}
-                            </p>
+                            <h3
+                                class="truncate text-sm font-semibold text-foreground"
+                            >
+                                {token.name}
+                            </h3>
                         </div>
+                        <button
+                            class="ml-2 inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-destructive opacity-0 transition-all hover:bg-card-destructive hover:text-destructive group-hover:opacity-100"
+                            onclick={() => (deleteConfirmToken = token)}
+                            aria-label="Eliminar token"
+                        >
+                            <Trash2 class="size-3.5" />
+                        </button>
                     </div>
-                {/each}
-            </div>
-        {/if}
-    </div>
-{/if}
+                    <div class="mt-3.5 space-y-2.5">
+                        <p class="text-xs text-muted-foreground">
+                            Último uso: {formatDate(token.last_used_at)}
+                        </p>
+                        <div class="flex flex-wrap gap-1.5">
+                            {#each token.abilities as ability (ability)}
+                                <span
+                                    class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-[11px] font-medium text-secondary-foreground-soft"
+                                >
+                                    {ability === '*' ? 'Acceso total' : ability}
+                                </span>
+                            {/each}
+                        </div>
+                        <p class="text-[10px] text-muted-foreground/60">
+                            Creado {formatDate(token.created_at)}
+                        </p>
+                    </div>
+                </div>
+            {/each}
+        </div>
+    {/if}
+</div>
 
 <Dialog
     open={createDialogOpen && !newTokenPlainText}
@@ -443,7 +418,7 @@
                 onclick={() => (createDialogOpen = false)}
                 disabled={creating}>Cancelar</Button
             >
-            <Button onclick={createToken} disabled={creating}>
+            <Button variant="success" onclick={createToken} disabled={creating}>
                 {creating ? 'Creando...' : 'Crear token'}
             </Button>
         </DialogFooter>

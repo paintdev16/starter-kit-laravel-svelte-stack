@@ -9,8 +9,6 @@ class BroadcastServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        Broadcast::channel('admin.users', function ($user) {
-            return $user->hasAnyRole(['root', 'super-admin']);
-        });
+        Broadcast::routes();
     }
 }

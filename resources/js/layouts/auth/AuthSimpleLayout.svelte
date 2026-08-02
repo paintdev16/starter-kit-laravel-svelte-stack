@@ -28,9 +28,7 @@
                     <div
                         class="mb-1 flex h-9 w-9 items-center justify-center rounded-md"
                     >
-                        <AppLogoIcon
-                            class="size-9 fill-current text-foreground"
-                        />
+                        <AppLogoIcon class="size-9" />
                     </div>
                     <span class="sr-only">{title}</span>
                 </Link>

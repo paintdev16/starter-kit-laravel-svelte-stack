@@ -5,7 +5,7 @@ import SettingsLayout from '@/layouts/settings/Layout.svelte';
 import { initializeFlashToast } from '@/lib/flash-toast';
 import { initializeTheme } from '@/lib/theme.svelte';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'AppPaint';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
@@ -22,7 +22,13 @@ createInertiaApp({
         }
     },
     progress: {
-        color: '#4B5563',
+        // Token-driven: usa --primary del tema actual.
+        color:
+            typeof document !== 'undefined'
+                ? getComputedStyle(document.documentElement)
+                      .getPropertyValue('--primary')
+                      .trim() || 'hsl(239 84% 67%)'
+                : 'hsl(239 84% 67%)',
     },
 });
 

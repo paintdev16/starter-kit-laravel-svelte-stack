@@ -20,6 +20,7 @@
     import { register } from '@/routes';
     import { store } from '@/routes/login';
     import { request } from '@/routes/password';
+    import { Google, Github, Facebook, X, Apple } from '@/components/icons';
 
     let {
         status = '',
@@ -37,7 +38,7 @@
             github: 'GitHub',
             microsoft: 'Microsoft',
             facebook: 'Facebook',
-            twitter: 'Twitter',
+            x: 'X',
             linkedin: 'LinkedIn',
             apple: 'Apple',
             discord: 'Discord',
@@ -48,12 +49,23 @@
 
         return labels[name] ?? name.charAt(0).toUpperCase() + name.slice(1);
     }
+
+    function providerIcon(name: string) {
+        const icons: Record<string, any> = {
+            google: Google,
+            github: Github,
+            facebook: Facebook,
+            x: X,
+            apple: Apple,
+        };
+        return icons[name];
+    }
 </script>
 
 <AppHead title="Iniciar sesión" />
 
 {#if status}
-    <div class="mb-4 text-center text-sm font-medium text-green-600">
+    <div class="mb-4 text-center text-sm font-medium text-success">
         {status}
     </div>
 {/if}
@@ -129,12 +141,20 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div
+                class="grid gap-3 {enabledProviders.length === 1
+                    ? 'grid-cols-1'
+                    : 'grid-cols-2'}"
+            >
                 {#each enabledProviders as provider (provider)}
+                    {@const Icon = providerIcon(provider)}
                     <a
                         href="/auth/{provider}/redirect"
                         class="inline-flex items-center justify-center gap-2 rounded-lg border bg-card px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
                     >
+                        {#if Icon}
+                            <Icon class="size-4 shrink-0" />
+                        {/if}
                         {providerLabel(provider)}
                     </a>
                 {/each}

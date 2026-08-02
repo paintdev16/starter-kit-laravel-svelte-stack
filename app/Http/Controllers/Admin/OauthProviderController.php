@@ -9,8 +9,15 @@ use Illuminate\Http\Request;
 
 class OauthProviderController extends Controller
 {
-    public function index(): JsonResponse
+    private function authorizeAccess(Request $request): void
     {
+        abort_unless($request->user()->hasRole('root'), 403, 'No tienes permiso para gestionar proveedores OAuth.');
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $this->authorizeAccess($request);
+
         $providers = OauthProvider::orderBy('sort')->orderBy('provider')->get()->map(fn ($p) => [
             'id' => $p->id,
             'provider' => $p->provider,
@@ -27,6 +34,8 @@ class OauthProviderController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $this->authorizeAccess($request);
+
         $data = $request->validate([
             'provider' => 'required|string|max:100|unique:oauth_providers,provider',
             'client_id' => 'required|string',
@@ -53,6 +62,8 @@ class OauthProviderController extends Controller
 
     public function update(Request $request, OauthProvider $oauthProvider): JsonResponse
     {
+        $this->authorizeAccess($request);
+
         $data = $request->validate([
             'provider' => 'required|string|max:100|unique:oauth_providers,provider,'.$oauthProvider->id,
             'client_id' => 'required|string',
@@ -80,15 +91,19 @@ class OauthProviderController extends Controller
         ]);
     }
 
-    public function destroy(OauthProvider $oauthProvider): JsonResponse
+    public function destroy(Request $request, OauthProvider $oauthProvider): JsonResponse
     {
+        $this->authorizeAccess($request);
+
         $oauthProvider->delete();
 
         return response()->json(null, 204);
     }
 
-    public function toggleShowOnLogin(OauthProvider $oauthProvider): JsonResponse
+    public function toggleShowOnLogin(Request $request, OauthProvider $oauthProvider): JsonResponse
     {
+        $this->authorizeAccess($request);
+
         $oauthProvider->update([
             'show_on_login' => ! $oauthProvider->show_on_login,
         ]);
@@ -99,8 +114,10 @@ class OauthProviderController extends Controller
         ]);
     }
 
-    public function toggle(OauthProvider $oauthProvider): JsonResponse
+    public function toggle(Request $request, OauthProvider $oauthProvider): JsonResponse
     {
+        $this->authorizeAccess($request);
+
         $oauthProvider->update([
             'enabled' => ! $oauthProvider->enabled,
         ]);

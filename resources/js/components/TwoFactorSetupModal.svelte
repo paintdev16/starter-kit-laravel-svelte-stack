@@ -194,7 +194,11 @@
                     </div>
 
                     <div class="flex w-full items-center space-x-5">
-                        <Button class="w-full" onclick={handleModalNextStep}>
+                        <Button
+                            variant="success"
+                            class="w-full"
+                            onclick={handleModalNextStep}
+                        >
                             {modalConfig.buttonText}
                         </Button>
                     </div>
@@ -298,6 +302,7 @@
                                 </Button>
                                 <Button
                                     type="submit"
+                                    variant="success"
                                     class="w-auto flex-1"
                                     disabled={processing || code.length < 6}
                                 >

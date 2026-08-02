@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('avatars', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('path');
+            $table->string('path', 2048);
+            $table->string('source')->default('local');
             $table->timestamps();
         });
 

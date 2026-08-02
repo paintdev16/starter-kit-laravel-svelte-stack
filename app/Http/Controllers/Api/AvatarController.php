@@ -47,7 +47,10 @@ class AvatarController extends Controller
             return response()->json(['message' => 'No autorizado.'], 403);
         }
 
-        Storage::disk('public')->delete($avatar->path);
+        if ($avatar->source === 'local') {
+            Storage::disk('public')->delete($avatar->path);
+        }
+
         $avatar->delete();
 
         return response()->json(['message' => 'Avatar eliminado.']);

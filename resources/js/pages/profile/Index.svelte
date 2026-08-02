@@ -19,8 +19,10 @@
     import KeyRound from '@lucide/svelte/icons/key-round';
     import Mail from '@lucide/svelte/icons/mail';
     import Pencil from '@lucide/svelte/icons/pencil';
+    import Radio from '@lucide/svelte/icons/radio';
     import Shield from '@lucide/svelte/icons/shield';
     import ShieldCheck from '@lucide/svelte/icons/shield-check';
+    import Sparkles from '@lucide/svelte/icons/sparkles';
     import Trash2 from '@lucide/svelte/icons/trash-2';
     import Upload from '@lucide/svelte/icons/upload';
     import User from '@lucide/svelte/icons/user';
@@ -55,6 +57,13 @@
         Array.isArray(page.props.auth.permissions)
             ? page.props.auth.permissions
             : [],
+    );
+
+    const realtimeEnabled = $derived(Boolean(page.props.realtime?.enabled));
+    const canSeeRealtime = $derived(
+        userRoles.some((role) =>
+            ['root', 'super-admin', 'admin'].includes(role),
+        ),
     );
 
     const user = $derived(page.props.auth.user);
@@ -92,6 +101,16 @@
     let previewFile = $state<File | null>(null);
     let previewUrl = $state<string | null>(null);
     let fileInput: HTMLInputElement | undefined = $state();
+
+    // Security "completeness" score used purely for the hero visual —
+    // gives the header something dynamic to show off besides static text.
+    const securityScore = $derived(
+        [
+            Boolean(user.email_verified_at),
+            twoFactorEnabled,
+            passkeys?.length ?? 0,
+        ].filter(Boolean).length,
+    );
 
     function triggerFileInput() {
         fileInput?.click();
@@ -163,19 +182,28 @@
 <div
     class="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 pb-10 md:p-6 lg:p-8"
 >
-    <Card.Root class="relative">
-        <!-- Acento lateral -->
+    <!-- ============ HERO ============ -->
+    <Card.Root
+        class="relative overflow-hidden border-primary/15 bg-linear-to-br from-primary/10 via-card to-card"
+    >
+        <!-- Decorative glow -->
         <div
-            class="absolute inset-y-0 left-0 w-1 overflow-hidden rounded-l-xl bg-primary"
+            class="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-primary/20 blur-3xl"
+        ></div>
+        <div
+            class="pointer-events-none absolute -bottom-20 left-1/3 size-48 rounded-full bg-primary/10 blur-3xl"
         ></div>
 
         <Card.Content
-            class="flex flex-col gap-5 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6 md:p-8"
+            class="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:gap-6 sm:p-7 md:p-8"
         >
             <!-- Avatar -->
             <div class="group relative mx-auto shrink-0 sm:mx-0">
+                <div
+                    class="absolute -inset-1 rounded-full bg-linear-to-br from-primary to-primary/40 opacity-70 blur-sm"
+                ></div>
                 <Avatar
-                    class="size-16 overflow-hidden rounded-full sm:size-20 md:size-24"
+                    class="relative size-20 overflow-hidden rounded-full ring-4 ring-background sm:size-24 md:size-28"
                 >
                     {#if user.avatar}
                         <AvatarImage
@@ -185,7 +213,7 @@
                         />
                     {/if}
                     <AvatarFallback
-                        class="rounded-full bg-primary/10 text-xl font-bold text-primary sm:text-2xl md:text-3xl"
+                        class="rounded-full bg-primary/10 text-2xl font-bold text-primary sm:text-3xl md:text-4xl"
                     >
                         {initials}
                     </AvatarFallback>
@@ -193,20 +221,22 @@
 
                 {#if avatarUploading}
                     <div
-                        class="absolute inset-0 flex items-center justify-center rounded-full bg-black/70 backdrop-blur-sm"
+                        class="absolute inset-0 flex items-center justify-center rounded-full bg-overlay/70 backdrop-blur-sm"
                     >
                         <Upload
-                            class="size-4 animate-pulse text-white sm:size-5"
+                            class="size-4 animate-pulse text-primary-foreground sm:size-5"
                         />
                     </div>
                 {:else}
                     <button
                         onclick={openAvatarGallery}
-                        class="group/overlay absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-full bg-black/0 opacity-0 transition-all duration-200 hover:bg-black/60 hover:opacity-100"
+                        class="group/overlay absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-1 overflow-hidden rounded-full bg-overlay/0 opacity-0 transition-all duration-200 hover:bg-overlay/60 hover:opacity-100"
                     >
-                        <Camera class="size-4 text-white sm:size-5" />
+                        <Camera
+                            class="size-4 text-primary-foreground sm:size-5"
+                        />
                         <span
-                            class="hidden text-[10px] font-medium text-white sm:block"
+                            class="hidden text-[10px] font-medium text-primary-foreground sm:block"
                             >{avatars.length > 0
                                 ? 'Ver fotos'
                                 : 'Agregar foto'}</span
@@ -217,10 +247,10 @@
                 {#if avatars.length > 0}
                     <button
                         onclick={openAvatarGallery}
-                        class="absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full border-2 border-background bg-muted text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground sm:size-6"
+                        class="absolute -bottom-1 -right-1 flex size-6 items-center justify-center rounded-full border-2 border-background bg-muted text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                         aria-label="Ver avatars"
                     >
-                        <span class="text-[9px] font-bold sm:text-[10px]"
+                        <span class="text-[10px] font-bold"
                             >{avatars.length}</span
                         >
                     </button>
@@ -233,21 +263,22 @@
                     class="flex flex-wrap items-center justify-center gap-2.5 sm:justify-start"
                 >
                     <h1
-                        class="text-lg font-bold tracking-tight sm:text-xl md:text-2xl"
+                        class="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl"
                     >
                         {user.name}
                     </h1>
                     {#if user.email_verified_at}
                         <Badge
                             variant="outline"
-                            class="h-5 gap-1 border-success/30 px-2 text-[10px] font-normal text-success-foreground-soft"
+                            class="h-5 gap-1 border-success/30 bg-success/10 px-2 text-[10px] font-medium text-success-foreground-soft"
                         >
+                            <ShieldCheck class="size-3" />
                             Verificado
                         </Badge>
                     {:else}
                         <Badge
                             variant="outline"
-                            class="h-5 gap-1 border-warning/30 px-2 text-[10px] font-normal text-warning-foreground-soft"
+                            class="h-5 gap-1 border-warning/30 bg-warning/10 px-2 text-[10px] font-medium text-warning-foreground-soft"
                         >
                             Pendiente
                         </Badge>
@@ -255,13 +286,13 @@
                 </div>
 
                 <div
-                    class="mt-2 flex flex-col items-center gap-1 sm:flex-row sm:items-center sm:gap-3"
+                    class="mt-2.5 flex flex-col items-center gap-1.5 sm:flex-row sm:items-center sm:gap-3"
                 >
                     <p
                         class="flex items-center gap-1.5 text-sm text-muted-foreground"
                     >
                         <Mail class="size-4 shrink-0" />
-                        <span class="max-w-[220px] truncate sm:max-w-none"
+                        <span class="max-w-55 truncate sm:max-w-none"
                             >{user.email}</span
                         >
                     </p>
@@ -281,15 +312,34 @@
                         })}
                     </p>
                 </div>
+
+                <!-- Security score pips -->
+                <div
+                    class="mt-3.5 flex items-center justify-center gap-1.5 sm:justify-start"
+                >
+                    <Sparkles class="size-3.5 text-primary" />
+                    <span class="text-xs font-medium text-muted-foreground">
+                        Seguridad de cuenta
+                    </span>
+                    <div class="flex gap-1">
+                        {#each Array(3) as _, i (i)}
+                            <span
+                                class="h-1.5 w-5 rounded-full {i < securityScore
+                                    ? 'bg-primary'
+                                    : 'bg-muted'}"
+                            ></span>
+                        {/each}
+                    </div>
+                </div>
             </div>
 
             <!-- Editar perfil -->
             <Dialog.Root>
                 <Dialog.Trigger class="w-full sm:w-auto">
                     <Button
-                        variant="outline"
+                        variant="warning"
                         size="sm"
-                        class="w-full gap-1.5 sm:w-auto sm:shrink-0"
+                        class="w-full gap-1.5 bg-background/60 backdrop-blur-sm sm:w-auto sm:shrink-0"
                     >
                         <Pencil class="size-3.5" />
                         Editar perfil
@@ -357,7 +407,10 @@
                                         >Cancelar</Button
                                     >
                                 </Dialog.Close>
-                                <Button type="submit" disabled={processing}
+                                <Button
+                                    type="submit"
+                                    variant="info"
+                                    disabled={processing}
                                     >Guardar cambios</Button
                                 >
                             </Dialog.Footer>
@@ -369,12 +422,16 @@
     </Card.Root>
 
     <div class="grid gap-6 lg:grid-cols-12">
-        <!-- Left column -->
-        <div class="space-y-6 lg:col-span-8">
+        <!-- ============ LEFT COLUMN ============ -->
+        <div class="space-y-6 lg:col-span-7">
             <Card.Root>
-                <Card.Header>
+                <Card.Header class="pb-4">
                     <Card.Title class="flex items-center gap-2 text-lg">
-                        <User class="size-5 text-primary" />
+                        <span
+                            class="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                        >
+                            <User class="size-4" />
+                        </span>
                         Información personal
                     </Card.Title>
                     <Card.Description
@@ -383,24 +440,24 @@
                 </Card.Header>
                 <Card.Content>
                     <dl class="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-                        <div>
+                        <div class="rounded-lg border bg-muted/30 p-3">
                             <dt
                                 class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
                             >
                                 Nombre completo
                             </dt>
-                            <dd class="mt-1 text-sm font-medium">
+                            <dd class="mt-1 text-sm font-semibold">
                                 {user.name}
                             </dd>
                         </div>
-                        <div>
+                        <div class="rounded-lg border bg-muted/30 p-3">
                             <dt
                                 class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
                             >
                                 Correo electrónico
                             </dt>
                             <dd
-                                class="mt-1 flex items-center gap-2 text-sm font-medium"
+                                class="mt-1 flex flex-wrap items-center gap-2 text-sm font-semibold"
                             >
                                 {user.email}
                                 {#if user.email_verified_at}
@@ -418,13 +475,13 @@
                                 {/if}
                             </dd>
                         </div>
-                        <div>
+                        <div class="rounded-lg border bg-muted/30 p-3">
                             <dt
                                 class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
                             >
                                 Miembro desde
                             </dt>
-                            <dd class="mt-1 text-sm font-medium">
+                            <dd class="mt-1 text-sm font-semibold">
                                 {new Date(user.created_at).toLocaleDateString(
                                     'es-ES',
                                     {
@@ -435,13 +492,13 @@
                                 )}
                             </dd>
                         </div>
-                        <div>
+                        <div class="rounded-lg border bg-muted/30 p-3">
                             <dt
                                 class="text-xs font-medium uppercase tracking-wide text-muted-foreground"
                             >
                                 Última actualización
                             </dt>
-                            <dd class="mt-1 text-sm font-medium">
+                            <dd class="mt-1 text-sm font-semibold">
                                 {new Date(user.updated_at).toLocaleDateString(
                                     'es-ES',
                                     {
@@ -456,27 +513,22 @@
                 </Card.Content>
             </Card.Root>
 
-            <Card.Root class="border-destructive/10">
-                <Card.Content>
-                    <DeleteUser />
-                </Card.Content>
-            </Card.Root>
-        </div>
-
-        <!-- Right column -->
-        <div class="space-y-6 lg:col-span-4">
             {#if userRoles.length > 0}
                 <Card.Root>
                     <Card.Header class="pb-4">
                         <Card.Title class="flex items-center gap-2 text-lg">
-                            <Shield class="size-5 text-primary" />
+                            <span
+                                class="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                            >
+                                <Shield class="size-4" />
+                            </span>
                             Roles y permisos
                         </Card.Title>
                         <Card.Description
                             >Accesos asignados a tu cuenta</Card.Description
                         >
                     </Card.Header>
-                    <Card.Content class="space-y-3">
+                    <Card.Content class="space-y-4">
                         <div>
                             <p
                                 class="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground"
@@ -486,7 +538,7 @@
                             <div class="flex flex-wrap gap-1.5">
                                 {#each userRoles as role (role)}
                                     <span
-                                        class="inline-flex items-center rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground-soft"
+                                        class="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary"
                                     >
                                         {role}
                                     </span>
@@ -513,10 +565,78 @@
                 </Card.Root>
             {/if}
 
+            {#if canSeeRealtime}
+                <Card.Root>
+                    <Card.Header class="pb-4">
+                        <Card.Title class="flex items-center gap-2 text-lg">
+                            <span
+                                class="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                            >
+                                <Radio class="size-4" />
+                            </span>
+                            Realtime
+                        </Card.Title>
+                        <Card.Description
+                            >Estado de las notificaciones en tiempo real</Card.Description
+                        >
+                    </Card.Header>
+                    <Card.Content>
+                        <div
+                            class="flex items-center gap-2.5 rounded-lg border p-3 {realtimeEnabled
+                                ? 'border-card-success-border bg-card-success/40'
+                                : 'border-card-warning-border bg-card-warning/40'}"
+                        >
+                            <span
+                                class="size-2 shrink-0 rounded-full {realtimeEnabled
+                                    ? 'animate-pulse bg-success'
+                                    : 'bg-warning'}"
+                            ></span>
+                            <p
+                                class="text-sm font-medium {realtimeEnabled
+                                    ? 'text-success-foreground-soft'
+                                    : 'text-warning-foreground-soft'}"
+                            >
+                                {realtimeEnabled
+                                    ? 'Realtime activado'
+                                    : 'Realtime desactivado'}
+                            </p>
+                        </div>
+                    </Card.Content>
+                </Card.Root>
+            {/if}
+
+            <Card.Root class="border-destructive/20 bg-destructive/3">
+                <Card.Header class="pb-4">
+                    <Card.Title
+                        class="flex items-center gap-2 text-lg text-destructive"
+                    >
+                        <span
+                            class="flex size-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive"
+                        >
+                            <Trash2 class="size-4" />
+                        </span>
+                        Zona de peligro
+                    </Card.Title>
+                    <Card.Description
+                        >Acciones permanentes sobre tu cuenta</Card.Description
+                    >
+                </Card.Header>
+                <Card.Content>
+                    <DeleteUser />
+                </Card.Content>
+            </Card.Root>
+        </div>
+
+        <!-- ============ RIGHT COLUMN ============ -->
+        <div class="space-y-6 lg:col-span-5">
             <Card.Root>
                 <Card.Header class="pb-4">
                     <Card.Title class="flex items-center gap-2 text-lg">
-                        <ShieldCheck class="size-5 text-primary" />
+                        <span
+                            class="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                        >
+                            <ShieldCheck class="size-4" />
+                        </span>
                         Seguridad
                     </Card.Title>
                     <Card.Description
@@ -625,6 +745,7 @@
                                         </Dialog.Close>
                                         <Button
                                             type="submit"
+                                            variant="info"
                                             disabled={processing}
                                             >Guardar</Button
                                         >
@@ -691,6 +812,7 @@
                         Cancelar
                     </Button>
                     <Button
+                        variant="info"
                         size="sm"
                         onclick={saveAvatar}
                         disabled={avatarUploading}
@@ -706,7 +828,7 @@
             {:else}
                 <div class="flex gap-2">
                     <Button
-                        variant="outline"
+                        variant={latestAvatar ? 'warning' : 'success'}
                         size="sm"
                         onclick={triggerFileInput}
                     >

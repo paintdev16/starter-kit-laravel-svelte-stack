@@ -56,6 +56,30 @@
         return 'secondary';
     }
 
+    function actionBorder(action: string): string {
+        if (action.includes('created')) {
+            return 'border-l-card-success-border bg-card-success/20';
+        }
+
+        if (action.includes('updated') || action.includes('changed')) {
+            return 'border-l-card-info-border bg-card-info/20';
+        }
+
+        if (action.includes('deleted')) {
+            return 'border-l-card-destructive-border bg-card-destructive/20';
+        }
+
+        if (action.includes('login')) {
+            return 'border-l-card-primary-border bg-card-primary/20';
+        }
+
+        if (action.includes('logout')) {
+            return 'border-l-card-warning-border bg-card-warning/20';
+        }
+
+        return 'border-l-muted bg-muted/20';
+    }
+
     function actionLabel(action: string): string {
         if (action.includes('created')) {
             return 'Creación';
@@ -82,7 +106,9 @@
 </script>
 
 <div
-    class="group flex items-start gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
+    class="group flex items-start gap-4 border-l-4 px-5 py-4 transition-colors hover:bg-muted/40 {actionBorder(
+        log.action,
+    )}"
 >
     <Avatar class="size-9 ring-2 ring-background shadow-sm">
         <AvatarImage src={null} alt={log.user?.name ?? ''} />
@@ -151,9 +177,9 @@
             {/if}
 
             {#if log.ip_address}
-                <Separator orientation="vertical" class="h-3" />
+                <Separator orientation="vertical" class="h-3 hidden sm:block" />
                 <span
-                    class="inline-flex items-center gap-1 text-[11px] text-muted-foreground/70"
+                    class="hidden sm:inline-flex items-center gap-1 text-[11px] text-muted-foreground/70"
                 >
                     <MapPin class="size-3 opacity-50" />
                     {log.ip_address}

@@ -3,12 +3,17 @@
 namespace App\Observers;
 
 use App\Events\UserCreated;
+use App\Models\Setting;
 use App\Models\User;
 
 class UserObserver
 {
     public function created(User $user): void
     {
+        if (Setting::get('realtime_enabled', 'true') !== 'true') {
+            return;
+        }
+
         UserCreated::dispatch($user);
     }
 

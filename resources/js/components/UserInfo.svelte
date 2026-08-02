@@ -5,14 +5,17 @@
         AvatarImage,
     } from '@/components/ui/avatar';
     import { getInitials } from '@/lib/initials';
+    import { cn } from '@/lib/utils';
     import type { User } from '@/types';
 
     let {
         user,
         showEmail = false,
+        class: className,
     }: {
         user: User;
         showEmail?: boolean;
+        class?: string;
     } = $props();
 
     const showAvatar = $derived(user.avatar && user.avatar !== '');
@@ -22,7 +25,7 @@
     {#if showAvatar}
         <AvatarImage src={user.avatar!} alt={user.name} />
     {/if}
-    <AvatarFallback class="rounded-lg text-foreground">
+    <AvatarFallback class={cn('rounded-lg text-foreground', className)}>
         {getInitials(user.name)}
     </AvatarFallback>
 </Avatar>

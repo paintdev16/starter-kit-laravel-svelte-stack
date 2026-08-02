@@ -11,8 +11,10 @@ use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        abort_unless($request->user()->can('view-roles'), 403);
+
         $permissions = Permission::all()->map(fn ($p) => [
             'id' => $p->id,
             'name' => $p->name,
@@ -24,6 +26,8 @@ class PermissionController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        abort_unless($request->user()->hasAnyRole(['root', 'super-admin']), 403);
+
         $data = $request->validate([
             'name' => 'required|string|unique:permissions,name',
         ]);
@@ -46,6 +50,8 @@ class PermissionController extends Controller
 
     public function update(Request $request, Permission $permission): JsonResponse
     {
+        abort_unless($request->user()->hasAnyRole(['root', 'super-admin']), 403);
+
         $data = $request->validate([
             'name' => 'required|string|unique:permissions,name,'.$permission->id,
         ]);
@@ -63,6 +69,8 @@ class PermissionController extends Controller
 
     public function destroy(Request $request, Permission $permission): JsonResponse
     {
+        abort_unless($request->user()->hasAnyRole(['root', 'super-admin']), 403);
+
         $permissionName = $permission->name;
         $permission->delete();
 

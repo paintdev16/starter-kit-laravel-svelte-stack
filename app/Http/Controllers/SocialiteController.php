@@ -81,7 +81,6 @@ class SocialiteController extends Controller
                 $user->update([
                     'provider' => $provider,
                     'provider_id' => $socialUser->getId(),
-                    'social_avatar' => $socialUser->getAvatar(),
                 ]);
             }
         }
@@ -96,12 +95,37 @@ class SocialiteController extends Controller
                 'password' => null,
                 'provider' => $provider,
                 'provider_id' => $socialUser->getId(),
-                'social_avatar' => $socialUser->getAvatar(),
             ]);
         }
+
+        $this->syncSocialAvatar($user, $socialUser->getAvatar());
 
         Auth::login($user, true);
 
         return redirect()->intended(route('dashboard'));
+    }
+
+    private function syncSocialAvatar(User $user, ?string $avatarUrl): void
+    {
+        if (! $avatarUrl) {
+            return;
+        }
+
+        $existingSocial = $user->avatars()->where('source', 'url')->first();
+
+        if ($existingSocial) {
+            $existingSocial->update(['path' => $avatarUrl]);
+
+            return;
+        }
+
+        if ($user->avatars()->where('source', 'local')->exists()) {
+            return;
+        }
+
+        $user->avatars()->create([
+            'path' => $avatarUrl,
+            'source' => 'url',
+        ]);
     }
 }

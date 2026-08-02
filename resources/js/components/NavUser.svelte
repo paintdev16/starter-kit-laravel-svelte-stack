@@ -30,7 +30,11 @@
                             {...props}
                             data-test="sidebar-menu-button"
                         >
-                            <UserInfo {user} showEmail={true} />
+                            <UserInfo
+                                {user}
+                                showEmail={true}
+                                class="bg-sidebar-accent text-sidebar-accent-foreground"
+                            />
                             <ChevronsUpDown class="ml-auto size-4" />
                         </SidebarMenuButton>
                     {/snippet}

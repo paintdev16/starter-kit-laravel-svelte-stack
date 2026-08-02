@@ -23,6 +23,33 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Service Manager
+    |--------------------------------------------------------------------------
+    |
+    | Controls how background services (e.g. Reverb) are managed from the UI.
+    | Supported drivers: "local" (direct process), "systemd", "supervisor".
+    |
+    */
+
+    'manager' => env('SERVICE_MANAGER', 'local'),
+
+    'realtime_service' => env('REALTIME_SERVICE', 'reverb'),
+
+    'systemd' => [
+        'unit' => env('SYSTEMD_UNIT', 'reverb'),
+        'directory' => env('SYSTEMD_DIRECTORY', '/etc/systemd/system'),
+        'user' => env('SYSTEMD_USER', ''),
+        'sudo' => filter_var(env('SYSTEMD_SUDO', false), FILTER_VALIDATE_BOOL),
+    ],
+
+    'supervisor' => [
+        'program' => env('SUPERVISOR_PROGRAM', 'reverb'),
+        'directory' => env('SUPERVISOR_CONFIG_DIR', '/etc/supervisor/conf.d'),
+        'sudo' => filter_var(env('SUPERVISOR_SUDO', false), FILTER_VALIDATE_BOOL),
+    ],
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),

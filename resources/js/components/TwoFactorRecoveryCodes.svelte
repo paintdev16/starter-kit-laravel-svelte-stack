@@ -76,7 +76,7 @@
                 >
                     {#snippet children({ processing })}
                         <Button
-                            variant="secondary"
+                            variant="success"
                             type="submit"
                             disabled={processing}
                         >

@@ -13,7 +13,7 @@
 </script>
 
 <header
-    class="flex h-12 shrink-0 items-center gap-2 border-b border-sidebar-border/70 bg-background p-2"
+    class="flex h-12 shrink-0 items-center gap-2 border-b border-border bg-background p-2"
 >
     <div class="flex items-center gap-2">
         <SidebarTrigger class="-ml-1" />

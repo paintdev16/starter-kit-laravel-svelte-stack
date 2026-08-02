@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Avatar extends Model
 {
-    protected $fillable = ['user_id', 'path'];
+    protected $fillable = ['user_id', 'path', 'source'];
 
     protected $appends = ['url'];
 
@@ -17,8 +17,17 @@ class Avatar extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function isExternal(): bool
+    {
+        return $this->source === 'url';
+    }
+
     public function getUrlAttribute(): string
     {
+        if ($this->isExternal()) {
+            return $this->path;
+        }
+
         return asset('storage/'.$this->path);
     }
 }

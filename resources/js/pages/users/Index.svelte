@@ -12,27 +12,22 @@
 </script>
 
 <script lang="ts">
-    import { Link, router } from '@inertiajs/svelte';
+    import { page, router } from '@inertiajs/svelte';
     import {
         Calendar,
+        Check,
         ClipboardList,
-        Eye,
-        Globe,
         KeyRound,
-        Laptop,
         Mail,
-        Monitor,
+        MoreHorizontal,
         Pencil,
         Plus,
-        RotateCw,
         Shield,
         ShieldCheck,
-        Smartphone,
-        Tablet,
         Trash2,
-        Tv,
         UsersIcon,
     } from '@lucide/svelte';
+    import type { Component } from 'svelte';
     import AppHead from '@/components/AppHead.svelte';
     import {
         Avatar,
@@ -49,6 +44,12 @@
         DialogHeader,
         DialogTitle,
     } from '@/components/ui/dialog';
+    import {
+        DropdownMenu,
+        DropdownMenuContent,
+        DropdownMenuItem,
+        DropdownMenuTrigger,
+    } from '@/components/ui/dropdown-menu';
     import { Input } from '@/components/ui/input';
     import { Label } from '@/components/ui/label';
     import {
@@ -67,10 +68,19 @@
         TabsList,
         TabsTrigger,
     } from '@/components/ui/tabs';
-    import RolesPermisos from '../../components/users/RolePermissions.svelte';
-    import Settings from './Settings.svelte';
+    import ActivityOverview from '@/components/users/activity/ActivityOverview.svelte';
+    import RolesPermisos from '@/components/users/RolePermissions.svelte';
     import Token from './Token.svelte';
     import Verification from './Verification.svelte';
+
+    type TabId = 'users' | 'roles' | 'activity' | 'token' | 'verification';
+
+    interface TabDef {
+        id: TabId;
+        label: string;
+        icon: Component;
+        description: string;
+    }
 
     interface UserItem {
         id: number;
@@ -120,7 +130,7 @@
         canManageTokens = false,
         canCreateUser = false,
         canManageVerification = false,
-        canManageSocialite = false,
+        canViewRoles = false,
     }: {
         users?: PaginatedData<UserItem>;
         rootCount?: number;
@@ -128,10 +138,211 @@
         canManageTokens?: boolean;
         canCreateUser?: boolean;
         canManageVerification?: boolean;
-        canManageSocialite?: boolean;
+        canViewRoles?: boolean;
     } = $props();
 
-    let tab = $state('users');
+    const MOBILE_PRIMARY_COUNT = 2;
+    let isMobile = $state(false);
+
+    $effect(() => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        const mq = window.matchMedia('(max-width: 767px)');
+        const update = () => {
+            isMobile = mq.matches;
+        };
+        update();
+        mq.addEventListener('change', update);
+
+        return () => mq.removeEventListener('change', update);
+    });
+
+    const tabMeta: Record<TabId, { title: string; description: string }> = {
+        users: {
+            title: 'Usuarios',
+            description: '',
+        },
+        roles: {
+            title: 'Roles y permisos',
+            description: 'Administra los roles y permisos del sistema',
+        },
+        activity: {
+            title: 'Actividad',
+            description: 'Historial de actividad de los usuarios',
+        },
+        token: {
+            title: 'Tokens de API',
+            description: 'Gestiona tokens para integraciones con terceros',
+        },
+        verification: {
+            title: 'Verificación',
+            description: 'Gestiona la verificación de correos electrónicos',
+        },
+    };
+
+    const visibleTabs = $derived.by((): TabDef[] => {
+        const defs: (TabDef & { show: boolean })[] = [
+            {
+                id: 'users',
+                label: 'Usuarios',
+                icon: UsersIcon,
+                description: tabMeta.users.description,
+                show: true,
+            },
+            {
+                id: 'roles',
+                label: 'Roles',
+                icon: Shield,
+                description: tabMeta.roles.description,
+                show: canViewRoles,
+            },
+            {
+                id: 'activity',
+                label: 'Actividad',
+                icon: ClipboardList,
+                description: tabMeta.activity.description,
+                show: canViewActivity,
+            },
+            {
+                id: 'token',
+                label: 'Token',
+                icon: KeyRound,
+                description: tabMeta.token.description,
+                show: canManageTokens,
+            },
+            {
+                id: 'verification',
+                label: 'Verificación',
+                icon: ShieldCheck,
+                description: tabMeta.verification.description,
+                show: canManageVerification,
+            },
+        ];
+
+        return defs.filter((t) => t.show).map(({ show: _, ...rest }) => rest);
+    });
+
+    const allowedTabIds = $derived(visibleTabs.map((t) => t.id));
+
+    function isTabAllowed(id: string): id is TabId {
+        switch (id) {
+            case 'users':
+                return true;
+            case 'roles':
+                return canViewRoles;
+            case 'activity':
+                return canViewActivity;
+            case 'token':
+                return canManageTokens;
+            case 'verification':
+                return canManageVerification;
+            default:
+                return false;
+        }
+    }
+
+    function readTabFromUrl(): TabId {
+        try {
+            const raw = page.url.includes('?')
+                ? page.url.slice(page.url.indexOf('?') + 1)
+                : '';
+            const param = new URLSearchParams(raw).get('tab');
+
+            if (param && isTabAllowed(param)) {
+                return param;
+            }
+        } catch {
+            // ignore
+        }
+
+        return 'users';
+    }
+
+    let tab = $state<TabId>(readTabFromUrl());
+
+    const headerTitle = $derived(tabMeta[tab]?.title ?? 'Usuarios');
+    const headerDescription = $derived.by(() => {
+        if (tab === 'users') {
+            const unit =
+                users.total === 1
+                    ? 'usuario registrado'
+                    : 'usuarios registrados';
+
+            return `${users.total} ${unit} en el sistema`;
+        }
+
+        return tabMeta[tab]?.description ?? '';
+    });
+
+    const barTabs = $derived.by((): TabDef[] => {
+        const ordered = visibleTabs;
+
+        if (!isMobile || ordered.length <= MOBILE_PRIMARY_COUNT) {
+            return ordered;
+        }
+
+        const primary = ordered.slice(0, MOBILE_PRIMARY_COUNT);
+
+        if (primary.some((t) => t.id === tab)) {
+            return primary;
+        }
+
+        const active = ordered.find((t) => t.id === tab);
+
+        if (!active) {
+            return primary;
+        }
+
+        return [...primary.slice(0, MOBILE_PRIMARY_COUNT - 1), active];
+    });
+
+    const overflowTabs = $derived.by((): TabDef[] => {
+        if (!isMobile || visibleTabs.length <= MOBILE_PRIMARY_COUNT) {
+            return [];
+        }
+
+        const barIds = new Set(barTabs.map((t) => t.id));
+
+        return visibleTabs.filter((t) => !barIds.has(t.id));
+    });
+
+    const overflowHasActive = $derived(overflowTabs.some((t) => t.id === tab));
+
+    function syncTabToUrl(next: TabId) {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        const url = new URL(window.location.href);
+
+        if (next === 'users') {
+            url.searchParams.delete('tab');
+        } else {
+            url.searchParams.set('tab', next);
+        }
+
+        window.history.replaceState(window.history.state, '', url);
+    }
+
+    function setTab(next: string) {
+        if (!isTabAllowed(next)) {
+            return;
+        }
+
+        tab = next;
+        syncTabToUrl(tab);
+    }
+
+    $effect(() => {
+        if (!allowedTabIds.includes(tab)) {
+            tab = 'users';
+        }
+
+        syncTabToUrl(tab);
+    });
+
     function getInitials(name: string): string {
         return name
             .split(' ')
@@ -212,6 +423,18 @@
             .split('-')
             .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
             .join(' ');
+    }
+
+    function userCardClasses(user: UserItem): string {
+        if (user.roles.some((r) => r === 'root' || r === 'super-admin')) {
+            return 'border-card-primary-border bg-card-primary/40 hover:border-card-primary-border/70 hover:bg-card-primary/60';
+        }
+
+        if (user.roles.some((r) => r === 'admin')) {
+            return 'border-card-info-border bg-card-info/40 hover:border-card-info-border/70 hover:bg-card-info/60';
+        }
+
+        return 'border-card-success-border bg-card-success/40 hover:border-card-success-border/70 hover:bg-card-success/60';
     }
 
     function roleCard(name: string) {
@@ -326,75 +549,6 @@
             },
         });
     }
-
-    let currentDevice = $state<any>(null);
-    let deviceLoading = $state(false);
-    let activityGroups = $state<any[]>([]);
-    let activityLoading = $state(false);
-
-    async function fetchCurrentDevice() {
-        deviceLoading = true;
-
-        try {
-            const res = await fetch('/activity/current-device', {
-                credentials: 'include',
-            });
-
-            if (!res.ok) {
-                throw new Error(`${res.status} ${res.statusText}`);
-            }
-
-            currentDevice = await res.json();
-        } catch (e) {
-            console.error('fetchCurrentDevice:', e);
-            currentDevice = null;
-        } finally {
-            deviceLoading = false;
-        }
-    }
-
-    async function fetchActivityGroups() {
-        activityLoading = true;
-
-        try {
-            const res = await fetch('/activity/grouped', {
-                credentials: 'include',
-            });
-
-            if (!res.ok) {
-                throw new Error(`${res.status} ${res.statusText}`);
-            }
-
-            activityGroups = await res.json();
-        } catch (e) {
-            console.error('fetchActivityGroups:', e);
-            activityGroups = [];
-        } finally {
-            activityLoading = false;
-        }
-    }
-
-    function formatDate(dateStr: string) {
-        return new Date(dateStr).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    }
-
-    $effect(() => {
-        if (tab === 'activity') {
-            if (currentDevice === null && !deviceLoading) {
-                fetchCurrentDevice();
-            }
-
-            if (activityGroups.length === 0 && !activityLoading) {
-                fetchActivityGroups();
-            }
-        }
-    });
 </script>
 
 <AppHead title="Usuarios" />
@@ -407,40 +561,15 @@
     >
         <div>
             <h1 class="text-2xl font-bold tracking-tight md:text-3xl">
-                {tab === 'users'
-                    ? 'Usuarios'
-                    : tab === 'roles'
-                      ? 'Roles y permisos'
-                      : tab === 'token'
-                        ? 'Tokens de API'
-                        : tab === 'verification'
-                          ? 'Verificación'
-                          : tab === 'settings'
-                            ? 'Configuración'
-                            : 'Actividad'}
+                {headerTitle}
             </h1>
             <p class="mt-1 text-sm text-muted-foreground">
-                {#if tab === 'users'}
-                    {users.total}
-                    {users.total === 1
-                        ? 'usuario registrado'
-                        : 'usuarios registrados'} en el sistema
-                {:else if tab === 'roles'}
-                    Administra los roles y permisos del sistema
-                {:else if tab === 'token'}
-                    Gestiona tokens para integraciones con terceros
-                {:else if tab === 'verification'}
-                    Gestiona la verificación de correos electrónicos
-                {:else if tab === 'settings'}
-                    Configura las opciones generales del sistema
-                {:else}
-                    Historial de actividad de los usuarios
-                {/if}
+                {headerDescription}
             </p>
         </div>
         {#if tab === 'users' && canCreateUser}
             <div class="flex items-center gap-2">
-                <Button size="sm" onclick={openCreateUser}>
+                <Button size="sm" variant="success" onclick={openCreateUser}>
                     <Plus class="mr-1.5 size-4" />
                     Nuevo
                 </Button>
@@ -449,32 +578,51 @@
     </div>
 
     <Tabs bind:value={tab}>
-        <TabsList variant="line">
-            <TabsTrigger value="users" class="gap-2">
-                <UsersIcon class="size-4" />
-                Usuarios
-            </TabsTrigger>
-            <TabsTrigger value="roles" class="gap-2">
-                <Shield class="size-4" />
-                Roles
-            </TabsTrigger>
-            <TabsTrigger value="activity" class="gap-2">
-                <ClipboardList class="size-4" />
-                Actividad
-            </TabsTrigger>
-            <TabsTrigger value="token" class="gap-2">
-                <KeyRound class="size-4" />
-                Token
-            </TabsTrigger>
-            <TabsTrigger value="verification" class="gap-2">
-                <ShieldCheck class="size-4" />
-                Verificación
-            </TabsTrigger>
-            {#if canManageSocialite}
-                <TabsTrigger value="settings" class="gap-2">
-                    <Globe class="size-4" />
-                    Configuración
+        <TabsList
+            variant="line"
+            class="h-auto w-full max-w-full flex-wrap justify-start gap-1"
+        >
+            {#each barTabs as t (t.id)}
+                {@const Icon = t.icon}
+                <TabsTrigger value={t.id} class="gap-2">
+                    <Icon class="size-4" />
+                    <span class="truncate">{t.label}</span>
                 </TabsTrigger>
+            {/each}
+
+            {#if overflowTabs.length > 0}
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        {#snippet child({ props })}
+                            <button
+                                type="button"
+                                class="relative inline-flex h-[calc(100%-1px)] items-center justify-center gap-1.5 rounded-md px-1.5 py-0.5 text-sm font-medium transition-all hover:text-foreground {overflowHasActive
+                                    ? 'text-foreground'
+                                    : 'text-foreground/60'}"
+                                aria-label="Más pestañas"
+                                {...props}
+                            >
+                                <MoreHorizontal class="size-4" />
+                                Más
+                            </button>
+                        {/snippet}
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="min-w-44">
+                        {#each overflowTabs as t (t.id)}
+                            {@const Icon = t.icon}
+                            <DropdownMenuItem
+                                class="gap-2"
+                                onclick={() => setTab(t.id)}
+                            >
+                                <Icon class="size-4" />
+                                <span class="flex-1">{t.label}</span>
+                                {#if tab === t.id}
+                                    <Check class="size-4 text-primary" />
+                                {/if}
+                            </DropdownMenuItem>
+                        {/each}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             {/if}
         </TabsList>
 
@@ -503,7 +651,9 @@
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {#each users.data as user (user.id)}
                         <div
-                            class="group relative overflow-hidden rounded-xl border bg-accent/30 p-4 transition-all hover:bg-accent/50 hover:shadow-sm"
+                            class="group relative overflow-hidden rounded-xl border p-4 transition-all hover:shadow-sm {userCardClasses(
+                                user,
+                            )}"
                         >
                             <div class="flex items-center gap-4">
                                 <Avatar class="size-10">
@@ -536,14 +686,14 @@
                                         class="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
                                     >
                                         <button
-                                            class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                                            class="inline-flex size-8 items-center justify-center rounded-lg text-warning transition-colors hover:bg-card-warning hover:text-warning"
                                             onclick={() => openEditUser(user)}
                                             aria-label="Editar"
                                         >
                                             <Pencil class="size-3.5" />
                                         </button>
                                         <button
-                                            class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card-destructive hover:text-destructive"
+                                            class="inline-flex size-8 items-center justify-center rounded-lg text-destructive transition-colors hover:bg-card-destructive hover:text-destructive"
                                             onclick={() =>
                                                 (deleteConfirmUser = user)}
                                             aria-label="Eliminar"
@@ -557,18 +707,18 @@
                                 <div class="flex flex-wrap gap-1.5">
                                     {#if user.email_verified_at}
                                         <span
-                                            class="inline-flex items-center rounded-md border border-success/30 bg-card-success px-1.5 py-0.5 text-[10px] font-medium text-success-foreground-soft"
+                                            class="inline-flex items-center rounded-md border border-card-success-border bg-card-success/40 px-1.5 py-0.5 text-[10px] font-medium text-success-foreground-soft"
                                             >Verificado</span
                                         >
                                     {:else}
                                         <span
-                                            class="inline-flex items-center rounded-md border border-warning/30 bg-card-warning px-1.5 py-0.5 text-[10px] font-medium text-warning-foreground-soft"
+                                            class="inline-flex items-center rounded-md border border-card-warning-border bg-card-warning/40 px-1.5 py-0.5 text-[10px] font-medium text-warning-foreground-soft"
                                             >Pendiente</span
                                         >
                                     {/if}
                                     {#if user.has_two_factor}
                                         <span
-                                            class="inline-flex items-center gap-0.5 rounded-md border border-info/30 bg-card-info px-1.5 py-0.5 text-[10px] font-medium text-info-foreground-soft"
+                                            class="inline-flex items-center gap-0.5 rounded-md border border-card-info-border bg-card-info/40 px-1.5 py-0.5 text-[10px] font-medium text-info-foreground-soft"
                                         >
                                             <ShieldCheck class="size-3" />
                                             2FA
@@ -576,7 +726,7 @@
                                     {/if}
                                     {#if user.has_passkeys}
                                         <span
-                                            class="inline-flex items-center gap-0.5 rounded-md border border-info/30 bg-card-info px-1.5 py-0.5 text-[10px] font-medium text-info-foreground-soft"
+                                            class="inline-flex items-center gap-0.5 rounded-md border border-card-info-border bg-card-info/40 px-1.5 py-0.5 text-[10px] font-medium text-info-foreground-soft"
                                         >
                                             <KeyRound class="size-3" />
                                             Passkey
@@ -613,12 +763,16 @@
                             page={users.current_page}
                             siblingCount={1}
                             onPageChange={(p) => {
+                                const query: Record<string, string> = {
+                                    page: String(p),
+                                };
+
+                                if (tab !== 'users') {
+                                    query.tab = tab;
+                                }
+
                                 router.get(
-                                    index.url({
-                                        query: {
-                                            page: String(p),
-                                        },
-                                    }),
+                                    index.url({ query }),
                                     {},
                                     { preserveState: true, replace: true },
                                 );
@@ -666,269 +820,29 @@
             {/if}
         </TabsContent>
 
-        <TabsContent value="roles">
-            <RolesPermisos active={tab === 'roles'} />
-        </TabsContent>
-
-        <TabsContent value="token">
-            <Token active={tab === 'token'} {canManageTokens} />
-        </TabsContent>
-
-        <TabsContent value="verification">
-            <Verification
-                active={tab === 'verification'}
-                {canManageVerification}
-            />
-        </TabsContent>
-
-        {#if canManageSocialite}
-            <TabsContent value="settings">
-                <Settings active={tab === 'settings'} />
+        {#if canViewRoles}
+            <TabsContent value="roles">
+                <RolesPermisos active={tab === 'roles'} />
             </TabsContent>
         {/if}
 
-        <TabsContent value="activity">
-            <div class="grid gap-6 lg:grid-cols-3">
-                <div class="lg:col-span-1">
-                    <div class="rounded-xl border bg-card p-5">
-                        <h3 class="mb-4 text-sm font-semibold text-foreground">
-                            Tu dispositivo actual
-                        </h3>
-                        {#if deviceLoading}
-                            <div class="space-y-3">
-                                {#each [1, 2, 3, 4] as _, i (i)}
-                                    <Skeleton class="h-4 w-full rounded-md" />
-                                {/each}
-                            </div>
-                        {:else if currentDevice}
-                            {#each [{ label: 'Navegador', value: currentDevice.browser && currentDevice.browser_version ? `${currentDevice.browser} ${currentDevice.browser_version}` : currentDevice.browser }, { label: 'Sistema operativo', value: currentDevice.os && currentDevice.os_version ? `${currentDevice.os} ${currentDevice.os_version}` : currentDevice.os }, { label: 'Tipo de dispositivo', value: currentDevice.device_type }, { label: 'Marca / Modelo', value: [currentDevice.device_brand, currentDevice.device_model]
-                                            .filter(Boolean)
-                                            .join(' ') || '—' }, { label: 'Dirección IP', value: currentDevice.ip_address }] as item (item.label)}
-                                {#if item.value}
-                                    <div
-                                        class="flex items-center justify-between py-1.5"
-                                    >
-                                        <span
-                                            class="text-xs text-muted-foreground"
-                                            >{item.label}</span
-                                        >
-                                        <span
-                                            class="text-xs font-medium text-foreground"
-                                            >{item.value}</span
-                                        >
-                                    </div>
-                                {/if}
-                            {/each}
-                            <div
-                                class="mt-3 flex items-center gap-2 text-xs text-muted-foreground"
-                            >
-                                {#if currentDevice.device_type
-                                    ?.toLowerCase()
-                                    .includes('smartphone') || currentDevice.device_type
-                                        ?.toLowerCase()
-                                        .includes('mobile') || currentDevice.device_type
-                                        ?.toLowerCase()
-                                        .includes('phone')}
-                                    <Smartphone class="size-3.5" />
-                                {:else if currentDevice.device_type
-                                    ?.toLowerCase()
-                                    .includes('tablet') || currentDevice.device_type
-                                        ?.toLowerCase()
-                                        .includes('phablet')}
-                                    <Tablet class="size-3.5" />
-                                {:else if currentDevice.device_type
-                                    ?.toLowerCase()
-                                    .includes('tv')}
-                                    <Tv class="size-3.5" />
-                                {:else if currentDevice.device_type
-                                    ?.toLowerCase()
-                                    .includes('laptop') || currentDevice.device_type
-                                        ?.toLowerCase()
-                                        .includes('notebook')}
-                                    <Laptop class="size-3.5" />
-                                {:else}
-                                    <Monitor class="size-3.5" />
-                                {/if}
-                                <span>Detección basada en User-Agent</span>
-                            </div>
-                        {:else}
-                            <p class="text-sm text-muted-foreground">
-                                No se pudo detectar la información del
-                                dispositivo.
-                            </p>
-                        {/if}
-                    </div>
-                </div>
+        {#if canViewActivity}
+            <TabsContent value="activity">
+                <ActivityOverview active={tab === 'activity'} />
+            </TabsContent>
+        {/if}
 
-                <div class="lg:col-span-2">
-                    {#if canViewActivity}
-                        <div class="rounded-xl border bg-card">
-                            <div
-                                class="flex items-center justify-between border-b px-5 py-3.5"
-                            >
-                                <h3
-                                    class="text-sm font-semibold text-foreground"
-                                >
-                                    Actividad por usuario
-                                </h3>
-                                {#if !activityLoading}
-                                    <button
-                                        onclick={() => fetchActivityGroups()}
-                                        class="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent"
-                                        aria-label="Recargar"
-                                    >
-                                        <RotateCw class="size-3.5" />
-                                    </button>
-                                {/if}
-                            </div>
-                            {#if activityLoading && activityGroups.length === 0}
-                                <div class="space-y-3 p-5">
-                                    {#each [1, 2, 3, 4] as _, i (i)}
-                                        <div class="flex items-center gap-3">
-                                            <Skeleton
-                                                class="size-10 shrink-0 rounded-full"
-                                            />
-                                            <div
-                                                class="min-w-0 flex-1 space-y-1.5"
-                                            >
-                                                <Skeleton
-                                                    class="h-4 w-36 rounded-md"
-                                                />
-                                                <Skeleton
-                                                    class="h-3 w-48 rounded-md"
-                                                />
-                                            </div>
-                                        </div>
-                                    {/each}
-                                </div>
-                            {:else if activityGroups.length === 0}
-                                <div
-                                    class="flex flex-col items-center justify-center gap-3 py-16"
-                                >
-                                    <ClipboardList
-                                        class="size-10 text-muted-foreground/30"
-                                    />
-                                    <p class="text-sm text-muted-foreground">
-                                        Aún no hay actividad registrada
-                                    </p>
-                                </div>
-                            {:else}
-                                <div class="divide-y">
-                                    {#each activityGroups as group, i (group.id ?? group.user_id ?? i)}
-                                        <div
-                                            class="flex items-center gap-4 px-5 py-4"
-                                        >
-                                            <div class="relative shrink-0">
-                                                <Avatar class="size-10">
-                                                    <AvatarFallback
-                                                        class="text-xs font-semibold"
-                                                        >{getInitials(
-                                                            group.user_name,
-                                                        )}</AvatarFallback
-                                                    >
-                                                </Avatar>
-                                                {#if group.is_online}
-                                                    <span
-                                                        class="absolute -right-0.5 -top-0.5 size-3 rounded-full border-2 border-background bg-success"
-                                                        title="Conectado"
-                                                    ></span>
-                                                {:else}
-                                                    <span
-                                                        class="absolute -right-0.5 -top-0.5 size-3 rounded-full border-2 border-background bg-muted-foreground/40"
-                                                        title="Desconectado"
-                                                    ></span>
-                                                {/if}
-                                            </div>
-                                            <div class="min-w-0 flex-1">
-                                                <div
-                                                    class="flex items-center gap-2"
-                                                >
-                                                    <p
-                                                        class="text-sm font-semibold text-foreground"
-                                                    >
-                                                        {group.user_name}
-                                                    </p>
-                                                    <span
-                                                        class="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
-                                                        >{group.count}
-                                                        {group.count === 1
-                                                            ? 'acción'
-                                                            : 'acciones'}</span
-                                                    >
-                                                    {#if group.is_online}
-                                                        <span
-                                                            class="text-[10px] font-medium text-success"
-                                                            >En línea</span
-                                                        >
-                                                    {/if}
-                                                </div>
-                                                <p
-                                                    class="mt-0.5 truncate text-xs text-muted-foreground"
-                                                >
-                                                    {group.last_action}
-                                                </p>
-                                                <p
-                                                    class="text-xs text-muted-foreground/60"
-                                                >
-                                                    {formatDate(
-                                                        group.last_date,
-                                                    )}
-                                                </p>
-                                                {#if group.last_login}
-                                                    <p
-                                                        class="text-xs text-primary"
-                                                    >
-                                                        Último login: {formatDate(
-                                                            group.last_login,
-                                                        )}
-                                                    </p>
-                                                {/if}
-                                            </div>
-                                            <Link
-                                                href={`/users/activity?user=${group.user_id}`}
-                                                class="shrink-0"
-                                            >
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                >
-                                                    <Eye
-                                                        class="mr-1.5 size-3.5"
-                                                    />
-                                                    Detalles
-                                                </Button>
-                                            </Link>
-                                        </div>
-                                    {/each}
-                                </div>
-                            {/if}
-                        </div>
-                    {:else}
-                        <div
-                            class="flex flex-col items-center justify-center gap-4 rounded-xl border bg-card py-20"
-                        >
-                            <Shield class="size-12 text-muted-foreground/30" />
-                            <div class="text-center">
-                                <p
-                                    class="text-base font-medium text-muted-foreground"
-                                >
-                                    Acceso restringido
-                                </p>
-                                <p
-                                    class="mt-1 text-sm text-muted-foreground/60"
-                                >
-                                    Solo los usuarios con rol <strong
-                                        >root</strong
-                                    >
-                                    o <strong>super-admin</strong> pueden ver el historial
-                                    de actividad.
-                                </p>
-                            </div>
-                        </div>
-                    {/if}
-                </div>
-            </div>
-        </TabsContent>
+        {#if canManageTokens}
+            <TabsContent value="token">
+                <Token active={tab === 'token'} />
+            </TabsContent>
+        {/if}
+
+        {#if canManageVerification}
+            <TabsContent value="verification">
+                <Verification active={tab === 'verification'} />
+            </TabsContent>
+        {/if}
     </Tabs>
 </div>
 
@@ -1025,9 +939,17 @@
             <div class="space-y-2">
                 <Label>Rol</Label>
                 {#if rolesLoading}
-                    <div class="space-y-2">
-                        {#each [1, 2, 3] as _, i (i)}
-                            <Skeleton class="h-14 w-full rounded-xl" />
+                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        {#each [1, 2, 3, 4] as _, i (i)}
+                            <div
+                                class="flex items-center gap-3 rounded-xl border p-3"
+                            >
+                                <Skeleton class="size-9 shrink-0 rounded-lg" />
+                                <div class="min-w-0 flex-1 space-y-1.5">
+                                    <Skeleton class="h-4 w-24" />
+                                    <Skeleton class="h-3 w-16" />
+                                </div>
+                            </div>
                         {/each}
                     </div>
                 {:else if filteredRoles.length === 0}
@@ -1051,10 +973,10 @@
                         <p
                             class="rounded-lg border border-warning/30 bg-card-warning px-3 py-2 text-xs text-warning-foreground-soft"
                         >
-                            No puedes cambiar el rol del Ãºnico usuario root.
+                            No puedes cambiar el rol del único usuario root.
                         </p>
                     {/if}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
                         {#each filteredRoles as role (role.name)}
                             <button
                                 type="button"
@@ -1117,7 +1039,11 @@
                 onclick={() => (userDialogOpen = false)}
                 disabled={savingUser}>Cancelar</Button
             >
-            <Button onclick={saveUser} disabled={savingUser}>
+            <Button
+                variant={editingUser ? 'info' : 'success'}
+                onclick={saveUser}
+                disabled={savingUser}
+            >
                 {savingUser
                     ? 'Guardando...'
                     : editingUser

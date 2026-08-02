@@ -5,6 +5,7 @@ use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\GlobalSearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocialiteController;
+use App\Http\Controllers\SystemsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,10 @@ Route::middleware(['auth', 'verified', 'inactivity:30'])->group(function () {
     Route::get('avatars', [AvatarController::class, 'index'])->name('avatars.index');
     Route::post('avatars', [AvatarController::class, 'store'])->name('avatars.store');
     Route::delete('avatars/{avatar}', [AvatarController::class, 'destroy'])->name('avatars.destroy');
+
+    Route::get('systems', [SystemsController::class, 'index'])->name('systems.index');
+    Route::get('systems/realtime/status', [SystemsController::class, 'realtimeStatus'])->name('systems.realtime.status');
+    Route::post('systems/realtime/toggle', [SystemsController::class, 'toggleRealtime'])->name('systems.realtime.toggle');
 });
 
 require __DIR__.'/settings.php';

@@ -10,8 +10,10 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        abort_unless($request->user()->can('view-roles'), 403);
+
         $roles = Role::with('permissions')->get()->map(fn ($role) => [
             'id' => $role->id,
             'name' => $role->name,
@@ -25,6 +27,8 @@ class RoleController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        abort_unless($request->user()->can('create-roles'), 403);
+
         $data = $request->validate([
             'name' => 'required|string|unique:roles,name',
             'permissions' => 'nullable|array',
@@ -44,6 +48,8 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role): JsonResponse
     {
+        abort_unless($request->user()->can('edit-roles'), 403);
+
         $data = $request->validate([
             'name' => 'required|string|unique:roles,name,'.$role->id,
             'permissions' => 'nullable|array',
@@ -67,6 +73,8 @@ class RoleController extends Controller
 
     public function destroy(Request $request, Role $role): JsonResponse
     {
+        abort_unless($request->user()->can('delete-roles'), 403);
+
         if ($role->name === 'root') {
             return response()->json(['error' => 'No puedes eliminar el rol root.'], 403);
         }

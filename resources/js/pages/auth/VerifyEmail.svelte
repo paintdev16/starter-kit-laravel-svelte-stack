@@ -25,7 +25,7 @@
 <AppHead title="Verificación de correo" />
 
 {#if status === 'verification-link-sent'}
-    <div class="mb-4 text-center text-sm font-medium text-green-600">
+    <div class="mb-4 text-center text-sm font-medium text-success">
         Se ha enviado un nuevo enlace de verificación al correo que
         proporcionaste durante el registro.
     </div>

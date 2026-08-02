@@ -22,6 +22,9 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            realtime: {
+                enabled: boolean;
+            };
             lastLogin: {
                 date: string;
                 browser: string | null;

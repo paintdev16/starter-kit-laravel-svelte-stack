@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { usePage } from '@inertiajs/svelte';
     import { Check, Pencil, Plus, Shield, Trash2, X } from '@lucide/svelte';
     import { Button } from '@/components/ui/button';
     import { Checkbox } from '@/components/ui/checkbox';
@@ -61,6 +62,24 @@
     let deletingPerm = $state(false);
 
     let isEditingRoot = $derived(editingRole?.name === 'root');
+
+    const page = usePage();
+
+    const userRoles = $derived<string[]>(
+        Array.isArray(page.props.auth.roles) ? page.props.auth.roles : [],
+    );
+    const userPermissions = $derived<string[]>(
+        Array.isArray(page.props.auth.permissions)
+            ? page.props.auth.permissions
+            : [],
+    );
+
+    const canCreateRole = $derived(userPermissions.includes('create-roles'));
+    const canEditRole = $derived(userPermissions.includes('edit-roles'));
+    const canDeleteRole = $derived(userPermissions.includes('delete-roles'));
+    const canManagePermissions = $derived(
+        userRoles.some((role) => ['root', 'super-admin'].includes(role)),
+    );
 
     function formatRoleName(name: string): string {
         return name
@@ -340,14 +359,16 @@
         {allPermissions.length === 1 ? 'permiso' : 'permisos'}
     </p>
     <div class="flex gap-2">
-        <Button
-            size="sm"
-            variant="outline"
-            onclick={() => (permsDialogOpen = true)}
-        >
-            <Shield class="mr-1.5 size-4" />
-            Permisos
-        </Button>
+        {#if canManagePermissions}
+            <Button
+                size="sm"
+                variant="outline"
+                onclick={() => (permsDialogOpen = true)}
+            >
+                <Shield class="mr-1.5 size-4" />
+                Permisos
+            </Button>
+        {/if}
         <Dialog
             open={roleDialogOpen}
             onOpenChange={(o) => {
@@ -365,12 +386,14 @@
                 roleDialogOpen = o;
             }}
         >
-            <DialogTrigger>
-                <Button size="sm">
-                    <Plus class="mr-1.5 size-4" />
-                    Nuevo rol
-                </Button>
-            </DialogTrigger>
+            {#if canCreateRole}
+                <DialogTrigger>
+                    <Button size="sm" variant="success">
+                        <Plus class="mr-1.5 size-4" />
+                        Nuevo rol
+                    </Button>
+                </DialogTrigger>
+            {/if}
             <DialogContent class="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle
@@ -484,6 +507,7 @@
                         disabled={savingRole}>Cancelar</Button
                     >
                     <Button
+                        variant={editingRole ? 'info' : 'success'}
                         onclick={saveRole}
                         disabled={savingRole || isEditingRoot}
                     >
@@ -536,7 +560,7 @@
                         }}
                     />
                     <button
-                        class="inline-flex size-7 items-center justify-center rounded-md text-success transition-colors hover:bg-card-success"
+                        class="inline-flex size-7 items-center justify-center rounded-md text-info transition-colors hover:bg-card-info"
                         onclick={savePermission}
                         disabled={savingPermission}
                         aria-label="Guardar"
@@ -570,7 +594,7 @@
                         }}
                     />
                     <button
-                        class="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-primary transition-colors hover:bg-card-primary"
+                        class="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-success transition-colors hover:bg-card-success"
                         onclick={createPermission}
                         disabled={creatingPermission}
                         aria-label="Crear permiso"
@@ -649,7 +673,7 @@
                                     class="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100"
                                 >
                                     <button
-                                        class="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                                        class="inline-flex size-6 items-center justify-center rounded-md text-warning transition-colors hover:bg-card-warning hover:text-warning"
                                         onclick={() => {
                                             editingPermission = perm;
                                             editPermName = perm.name;
@@ -660,7 +684,7 @@
                                         <Pencil class="size-3" />
                                     </button>
                                     <button
-                                        class="inline-flex size-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-card-destructive hover:text-destructive"
+                                        class="inline-flex size-6 items-center justify-center rounded-md text-destructive transition-colors hover:bg-card-destructive hover:text-destructive"
                                         onclick={() =>
                                             (deleteConfirmPerm = perm)}
                                         aria-label="Eliminar permiso"
@@ -763,25 +787,29 @@
                                     {formatRoleName(role.name)}
                                 </h3>
                             </div>
-                            {#if role.name !== 'root'}
+                            {#if role.name !== 'root' && (canEditRole || canDeleteRole)}
                                 <div
                                     class="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
                                 >
-                                    <button
-                                        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                                        onclick={() => openEditRole(role)}
-                                        aria-label="Editar"
-                                    >
-                                        <Pencil class="size-3.5" />
-                                    </button>
-                                    <button
-                                        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card-destructive hover:text-destructive"
-                                        onclick={() =>
-                                            (deleteConfirmRole = role)}
-                                        aria-label="Eliminar"
-                                    >
-                                        <Trash2 class="size-3.5" />
-                                    </button>
+                                    {#if canEditRole}
+                                        <button
+                                            class="inline-flex size-8 items-center justify-center rounded-lg text-warning transition-colors hover:bg-card-warning hover:text-warning"
+                                            onclick={() => openEditRole(role)}
+                                            aria-label="Editar"
+                                        >
+                                            <Pencil class="size-3.5" />
+                                        </button>
+                                    {/if}
+                                    {#if canDeleteRole}
+                                        <button
+                                            class="inline-flex size-8 items-center justify-center rounded-lg text-destructive transition-colors hover:bg-card-destructive hover:text-destructive"
+                                            onclick={() =>
+                                                (deleteConfirmRole = role)}
+                                            aria-label="Eliminar"
+                                        >
+                                            <Trash2 class="size-3.5" />
+                                        </button>
+                                    {/if}
                                 </div>
                             {/if}
                         </div>

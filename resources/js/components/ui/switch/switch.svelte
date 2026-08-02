@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Switch as SwitchPrimitive } from "bits-ui";
+	import type { Component } from "svelte";
 	import { cn, type WithoutChildrenOrChild } from "@/lib/utils.js";
 
 	type SwitchVariant = "primary" | "success" | "warning" | "destructive";
@@ -17,10 +18,14 @@
 		checked = $bindable(false),
 		size = "default",
 		variant = "primary",
+		checkedIcon,
+		uncheckedIcon,
 		...restProps
 	}: WithoutChildrenOrChild<SwitchPrimitive.RootProps> & {
 		size?: "sm" | "default";
 		variant?: SwitchVariant;
+		checkedIcon?: Component;
+		uncheckedIcon?: Component;
 	} = $props();
 </script>
 
@@ -39,6 +44,23 @@
 >
 	<SwitchPrimitive.Thumb
 		data-slot="switch-thumb"
-		class="rounded-full bg-background group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 group-data-[size=default]/switch:data-checked:translate-x-[calc(100%-2px)] group-data-[size=sm]/switch:data-checked:translate-x-[calc(100%-2px)] dark:data-checked:bg-primary-foreground group-data-[size=default]/switch:data-unchecked:translate-x-0 group-data-[size=sm]/switch:data-unchecked:translate-x-0 dark:data-unchecked:bg-foreground pointer-events-none block ring-0 transition-transform rtl:data-[state=checked]:translate-x-[calc(-100%)]"
-	/>
+		class="rounded-full bg-background group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 group-data-[size=default]/switch:data-checked:translate-x-[calc(100%-2px)] group-data-[size=sm]/switch:data-checked:translate-x-[calc(100%-2px)] dark:data-checked:bg-primary-foreground group-data-[size=default]/switch:data-unchecked:translate-x-0 group-data-[size=sm]/switch:data-unchecked:translate-x-0 dark:data-unchecked:bg-foreground pointer-events-none relative block ring-0 transition-transform rtl:data-[state=checked]:translate-x-[calc(-100%)]"
+	>
+		{#if checkedIcon}
+			<!-- svelte-ignore svelte_component_deprecated -->
+			<svelte:component
+				this={checkedIcon}
+				data-slot="switch-checked-icon"
+				class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-3 text-primary opacity-0 transition-opacity group-data-[state=checked]/switch:opacity-100 group-data-[size=sm]/switch:size-2"
+			/>
+		{/if}
+		{#if uncheckedIcon}
+			<!-- svelte-ignore svelte_component_deprecated -->
+			<svelte:component
+				this={uncheckedIcon}
+				data-slot="switch-unchecked-icon"
+				class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-3 text-muted-foreground opacity-0 transition-opacity group-data-[state=unchecked]/switch:opacity-100 group-data-[size=sm]/switch:size-2"
+			/>
+		{/if}
+	</SwitchPrimitive.Thumb>
 </SwitchPrimitive.Root>

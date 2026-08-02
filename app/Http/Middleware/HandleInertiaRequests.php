@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\ActivityLog;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -62,6 +63,9 @@ class HandleInertiaRequests extends Middleware
                 'isLastRoot' => $request->user()?->isRoot() && User::role('root')->count() <= 1,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'realtime' => [
+                'enabled' => Setting::get('realtime_enabled', 'true') === 'true',
+            ],
         ];
     }
 }

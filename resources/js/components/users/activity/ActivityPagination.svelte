@@ -6,7 +6,9 @@
     let { links }: { links: PageLink[] } = $props();
 </script>
 
-<div class="flex items-center justify-center gap-1 border-t px-5 py-4">
+<div
+    class="flex items-center justify-center gap-1 flex-wrap border-t px-5 py-4"
+>
     {#each links as link (link.url)}
         {#if link.url}
             <Link

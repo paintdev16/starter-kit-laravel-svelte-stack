@@ -64,7 +64,7 @@
         Las llaves de acceso no son compatibles en este navegador.
     </div>
 {:else if !showForm}
-    <Button variant="outline" onclick={() => (showForm = true)}>
+    <Button variant="success" onclick={() => (showForm = true)}>
         Añadir llave de acceso
     </Button>
 {:else}
@@ -94,6 +94,7 @@
         <div class="flex gap-2">
             <Button
                 type="submit"
+                variant="success"
                 disabled={passkeyRegister.isLoading || !name.trim()}
             >
                 {passkeyRegister.isLoading

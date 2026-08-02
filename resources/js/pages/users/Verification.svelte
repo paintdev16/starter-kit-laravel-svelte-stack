@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Shield, ShieldCheck, ShieldX } from '@lucide/svelte';
+    import { ShieldCheck, ShieldX } from '@lucide/svelte';
     import { Button } from '@/components/ui/button';
     import Skeleton from '@/components/ui/skeleton/skeleton.svelte';
 
@@ -13,10 +13,7 @@
         created_at: string;
     }
 
-    let {
-        active = false,
-        canManageVerification = false,
-    }: { active?: boolean; canManageVerification?: boolean } = $props();
+    let { active = false }: { active?: boolean } = $props();
 
     let users = $state<UserItem[]>([]);
     let loading = $state(false);
@@ -93,23 +90,7 @@
     });
 </script>
 
-{#if !canManageVerification}
-    <div
-        class="flex flex-col items-center justify-center gap-4 rounded-xl border bg-card py-20"
-    >
-        <Shield class="size-12 text-muted-foreground/30" />
-        <div class="text-center">
-            <p class="text-base font-medium text-muted-foreground">
-                Acceso restringido
-            </p>
-            <p class="mt-1 text-sm text-muted-foreground/60">
-                Solo los usuarios con rol <strong>root</strong>
-                o <strong>super-admin</strong> pueden gestionar la verificación de
-                correos.
-            </p>
-        </div>
-    </div>
-{:else if loading}
+{#if loading}
     <div class="space-y-3">
         {#each [1, 2, 3, 4] as _, i (i)}
             <Skeleton class="h-14 w-full rounded-xl" />
@@ -129,7 +110,7 @@
         </div>
     </div>
 {:else}
-    <div class="overflow-hidden rounded-xl border">
+    <div class="overflow-x-auto rounded-xl border">
         <table class="w-full">
             <thead>
                 <tr
@@ -145,7 +126,11 @@
             </thead>
             <tbody class="divide-y">
                 {#each users as user (user.id)}
-                    <tr class="transition-colors hover:bg-accent/20">
+                    <tr
+                        class="transition-colors hover:bg-accent/20 {user.verified
+                            ? 'border-l-4 border-l-card-success-border bg-card-success/20'
+                            : 'border-l-4 border-l-card-warning-border bg-card-warning/20'}"
+                    >
                         <td
                             class="px-4 py-3 text-sm font-medium text-foreground"
                         >
@@ -168,14 +153,14 @@
                         <td class="px-4 py-3">
                             {#if user.verified}
                                 <span
-                                    class="inline-flex items-center gap-1 rounded-md border border-success/30 bg-card-success px-1.5 py-0.5 text-[10px] font-medium text-success-foreground-soft"
+                                    class="inline-flex items-center gap-1 rounded-md border border-card-success-border bg-card-success/40 px-1.5 py-0.5 text-[10px] font-medium text-success-foreground-soft"
                                 >
                                     <ShieldCheck class="size-3" />
                                     Verificado
                                 </span>
                             {:else}
                                 <span
-                                    class="inline-flex items-center gap-1 rounded-md border border-warning/30 bg-card-warning px-1.5 py-0.5 text-[10px] font-medium text-warning-foreground-soft"
+                                    class="inline-flex items-center gap-1 rounded-md border border-card-warning-border bg-card-warning/40 px-1.5 py-0.5 text-[10px] font-medium text-warning-foreground-soft"
                                 >
                                     <ShieldX class="size-3" />
                                     Pendiente
@@ -188,7 +173,11 @@
                         <td class="px-4 py-3 text-right">
                             <Button
                                 size="sm"
-                                variant={user.verified ? 'outline' : 'default'}
+                                variant={user.roles.includes('super-admin')
+                                    ? 'outline'
+                                    : user.verified
+                                      ? 'warning'
+                                      : 'success'}
                                 onclick={() => toggle(user)}
                                 disabled={toggling === user.id ||
                                     user.roles.includes('super-admin')}

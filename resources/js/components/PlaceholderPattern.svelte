@@ -2,10 +2,7 @@
     const patternId = `pattern-${Math.random().toString(36).substring(2, 9)}`;
 </script>
 
-<svg
-    class="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20"
-    fill="none"
->
+<svg class="absolute inset-0 size-full stroke-foreground/20" fill="none">
     <defs>
         <pattern
             id={patternId}

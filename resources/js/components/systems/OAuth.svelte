@@ -1,5 +1,7 @@
 <script lang="ts">
     import { Globe, Pencil, Plus, Trash2 } from '@lucide/svelte';
+    import { toast } from 'svelte-sonner';
+    import { Google, Github, Facebook, X, Apple } from '@/components/icons';
     import { Button } from '@/components/ui/button';
     import { Checkbox } from '@/components/ui/checkbox';
     import {
@@ -26,11 +28,10 @@
         created_at: string;
     }
 
-    let { active = false }: { active?: boolean } = $props();
+    let { active }: { active: boolean } = $props();
 
     let providers = $state<ProviderItem[]>([]);
     let loading = $state(false);
-    let hasLoaded = $state(false);
 
     let dialogOpen = $state(false);
     let editing = $state<ProviderItem | null>(null);
@@ -198,23 +199,47 @@
         deleting = true;
 
         try {
-            await fetch(`/admin/oauth-providers/${deleteConfirm.id}`, {
-                method: 'DELETE',
-                headers: {
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': csrfToken(),
+            const res = await fetch(
+                `/admin/oauth-providers/${deleteConfirm.id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-CSRF-TOKEN': csrfToken(),
+                    },
                 },
-            });
+            );
+
+            if (!res.ok) {
+                const err = await res.json();
+                toast.error(err.message ?? 'No se pudo eliminar el proveedor.');
+
+                return;
+            }
+
             deleteConfirm = null;
             loadProviders();
+        } catch {
+            toast.error('Error de conexión al eliminar el proveedor.');
         } finally {
             deleting = false;
         }
     }
 
+    function providerIcon(name: string) {
+        const icons: Record<string, any> = {
+            google: Google,
+            github: Github,
+            facebook: Facebook,
+            x: X,
+            apple: Apple,
+        };
+
+        return icons[name];
+    }
+
     $effect(() => {
-        if (active && !hasLoaded && !loading) {
-            hasLoaded = true;
+        if (active) {
             loadProviders();
         }
     });
@@ -230,7 +255,7 @@
                 Gestiona los proveedores de inicio de sesión social.
             </p>
         </div>
-        <Button size="sm" onclick={openCreate}>
+        <Button size="sm" variant="success" onclick={openCreate}>
             <Plus class="mr-1.5 size-4" />
             Añadir
         </Button>
@@ -254,12 +279,13 @@
     {:else}
         <div class="space-y-2">
             {#each providers as p (p.id)}
+                {@const Icon = providerIcon(p.provider)}
                 <div
-                    class="flex items-center gap-4 rounded-xl border bg-accent/30 p-4"
+                    class="flex items-center gap-4 rounded-xl border border-card-primary-border bg-card-primary/40 p-4"
                 >
                     <span
                         class="inline-flex size-8 shrink-0 items-center justify-center rounded-lg {p.enabled
-                            ? 'bg-success/20 text-success'
+                            ? 'bg-card-success/40 text-success'
                             : 'bg-muted text-muted-foreground'}"
                         title={p.enabled ? 'Habilitado' : 'Deshabilitado'}
                     >
@@ -296,7 +322,12 @@
                         class="bg-destructive-foreground-soft/80"
                     />
                     <div class="min-w-0 flex-1">
-                        <p class="text-sm font-semibold text-foreground">
+                        <p
+                            class="flex items-center gap-1.5 text-sm font-semibold text-foreground"
+                        >
+                            {#if Icon}
+                                <Icon class="size-4 shrink-0" />
+                            {/if}
                             {p.provider}
                         </p>
                         <p class="truncate text-xs text-muted-foreground">
@@ -304,14 +335,14 @@
                         </p>
                     </div>
                     <button
-                        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                        class="inline-flex size-8 items-center justify-center rounded-lg text-warning transition-colors hover:bg-card-warning hover:text-warning"
                         onclick={() => openEdit(p)}
                         aria-label="Editar"
                     >
                         <Pencil class="size-3.5" />
                     </button>
                     <button
-                        class="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card-destructive hover:text-destructive"
+                        class="inline-flex size-8 items-center justify-center rounded-lg text-destructive transition-colors hover:bg-card-destructive hover:text-destructive"
                         onclick={() => (deleteConfirm = p)}
                         aria-label="Eliminar"
                     >
@@ -418,7 +449,12 @@
                 onclick={() => (dialogOpen = false)}
                 disabled={saving}>Cancelar</Button
             >
-            <Button type="button" onclick={save} disabled={saving}>
+            <Button
+                type="button"
+                variant={editing ? 'info' : 'success'}
+                onclick={save}
+                disabled={saving}
+            >
                 {saving
                     ? 'Guardando...'
                     : editing

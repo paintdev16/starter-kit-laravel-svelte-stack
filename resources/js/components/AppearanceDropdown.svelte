@@ -18,21 +18,21 @@
             icon: Sun,
             activeClass:
                 '[html[data-appearance=light]_&]:bg-background [html[data-appearance=light]_&]:shadow-sm [html[data-appearance=light]_&]:scale-100',
-            activeIconClass: '[html[data-appearance=light]_&]:text-amber-500',
+            activeIconClass: '[html[data-appearance=light]_&]:text-warning',
         },
         {
             value: 'system',
             icon: Monitor,
             activeClass:
                 '[html[data-appearance=system]_&]:bg-background [html[data-appearance=system]_&]:shadow-sm [html[data-appearance=system]_&]:scale-100',
-            activeIconClass: '[html[data-appearance=system]_&]:text-sky-500',
+            activeIconClass: '[html[data-appearance=system]_&]:text-info',
         },
         {
             value: 'dark',
             icon: Moon,
             activeClass:
                 '[html[data-appearance=dark]_&]:bg-background [html[data-appearance=dark]_&]:shadow-sm [html[data-appearance=dark]_&]:scale-100',
-            activeIconClass: '[html[data-appearance=dark]_&]:text-indigo-500',
+            activeIconClass: '[html[data-appearance=dark]_&]:text-primary',
         },
     ];
 </script>
